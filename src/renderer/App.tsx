@@ -1,11 +1,10 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import InitialSetup from './pages/InitialSetup';
-import Home from './pages/Home';
 import './App.css';
 import { RootContextProvider } from './context/RootContext';
-import useDir from './hooks/useDir';
-import { useEffect, useState } from 'react';
-import Loading from './components/Loading';
+import { useEffect } from 'react';
+import Landing from './pages/Landing';
+import useSuperApp from './hooks/useSuperApp';
+import SuperApiClient from './pages/SuperApiClient';
 
 export default function App() {
   return (
@@ -20,16 +19,7 @@ export default function App() {
 }
 
 function SetupApp() {
-  const { rootDir } = useDir();
-
-  const [showLoading, setShowLoading] = useState(true);
-
-  // show loading animation for 2 seconds
-  useEffect(() => {
-    setTimeout(() => {
-      setShowLoading(false);
-    }, 2000);
-  }, []);
+  const { app } = useSuperApp();
 
   useEffect(() => {
     // load-theme
@@ -53,11 +43,9 @@ function SetupApp() {
     }
   }
 
-  if (showLoading) {
-    return <Loading />;
-  } else if (rootDir) {
-    return <Home />;
-  } else {
-    return <InitialSetup />;
+  if (app === 'super_api_client') {
+    return <SuperApiClient />;
   }
+
+  return <Landing />;
 }
