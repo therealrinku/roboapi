@@ -1,38 +1,80 @@
+import { useRef, useState } from 'react';
 import { FiFile, FiSend } from 'react-icons/fi';
 
 export default function SuperApiClient() {
-  function getColor(rq: 'GET' | 'POST') {
-    return 'bg-red-500';
+  const reqUrl = useRef(null);
+  const [response, setResponse] = useState(null);
+  const [activeTab, setActiveTab] = useState('Headers');
+
+  const [headers, setHeaders] = useState([{ key: 'Cookie', value: 'pussy' }]);
+  const [params, setParams] = useState([]);
+
+  async function sendReq() {
+    window.electron.ipcRenderer.sendMessage(
+      'send-request',
+      reqUrl.current.value,
+    );
+
+    window.electron.ipcRenderer.once('send-request', (arg) => {
+      setResponse(arg);
+    });
   }
 
   return (
-    <div className="flex items-start">
-      <div className="bg-gray-200 w-[22%] h-screen text-sm flex flex-col items-center">
-        <div className="flex flex-col items-center w-full mt-10 gap-2">
-          <button className="flex items-center gap-2 hover:bg-gray-300 w-full p-2">
-            <span className="text-red-500 font-bold">GET</span>
-            <p>order_created hook</p>
-          </button>
-          <button className="flex items-center gap-2 hover:bg-gray-300 w-full p-2">
-            <span className="text-yellow-500 font-bold">POST</span>
-            <p>order_created hook</p>
-          </button>
-        </div>
-      </div>
-
-      <div className="w-[88%] text-sm px-5 mt-5 gap-3">
+    <div className="flex items-start text-sm">
+      <div className="w-[50%] text-sm px-5 mt-5 gap-3 sticky top-5">
         <p className="font-bold flex items-center gap-2">
-          <FiFile /> Order Created Webhook
+          <FiFile /> Unsaved Request
         </p>
-        <div className="flex items-center mt-2 pr-3 bg-gray-200">
+        <div className="flex items-center mt-2 pr-3 bg-gray-200 rounded">
           <input
+            ref={reqUrl}
             placeholder="Request Url"
-            className="w-full bg-inherit outline-none p-2"
+            className="w-full bg-inherit outline-none p-2 rounded"
           />
-          <button>
+          <button onClick={sendReq}>
             <FiSend />
           </button>
         </div>
+
+        <div className="flex items-center gap-5 mt-2">
+          <button
+            onClick={() => setActiveTab('Headers')}
+            className={`${activeTab === 'Headers' ? 'font-bold' : ''}`}
+          >
+            Headers
+          </button>
+          <button
+            onClick={() => setActiveTab('Body')}
+            className={`${activeTab === 'Body' ? 'font-bold' : ''}`}
+          >
+            Body
+          </button>
+          <button
+            onClick={() => setActiveTab('Params')}
+            className={`${activeTab === 'Params' ? 'font-bold' : ''}`}
+          >
+            Params
+          </button>
+        </div>
+
+        <div className="mt-2 border-t">
+          {activeTab === 'Headers' && (
+            <div>
+              {headers.map((header) => {
+                return (
+                  <p key={header.key}>
+                    {header.key} {header.value}
+                  </p>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="w-[50%] pt-5 border-l min-h-screen overflow-x-hidden px-5">
+        <pre>{JSON.stringify(response, null, 2)}</pre>
       </div>
     </div>
   );
