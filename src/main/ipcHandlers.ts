@@ -5,10 +5,10 @@ export function registerIpcHandlers(mainWindow: Electron.BrowserWindow | null) {
     const headersObj: Record<string, string> = {};
     const paramsObj: Record<string, string> = {};
 
-    args.headers.map((header) => {
+    args.headers.map((header: { key: string; value: string }) => {
       headersObj[header.key] = header.value;
     });
-    args.params.map((param) => {
+    args.params.map((param: { key: string; value: string }) => {
       paramsObj[param.key] = param.value;
     });
 

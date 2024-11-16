@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { FiFile, FiSend, FiTrash2 } from 'react-icons/fi';
+import { GoCheckCircle, GoCheckCircleFill } from 'react-icons/go';
 import Loading from '../components/Loading';
 
 export default function SuperApiClient() {
@@ -8,19 +9,28 @@ export default function SuperApiClient() {
   const [activeTab, setActiveTab] = useState('Headers');
   const [loading, setLoading] = useState(false);
 
-  const [headers, setHeaders] = useState([{ key: '', value: '' }]);
-  const [params, setParams] = useState([{ key: '', value: '' }]);
+  const [headers, setHeaders] = useState([
+    { key: '', value: '', isActive: true },
+  ]);
+  const [params, setParams] = useState([
+    { key: '', value: '', isActive: true },
+  ]);
 
   async function sendReq() {
     setLoading(true);
 
-    const activeHeaders = headers.filter(header=>header.key.trim());
-    const activeParams = params.filter(param=>param.key.trim());
-    
-    window.electron.ipcRenderer.sendMessage(
-      'send-request',
-      {reqUrl: reqUrl.current.value, headers: activeHeaders, params: activeParams }
+    const activeHeaders = headers.filter(
+      (header) => header.key.trim() && header.isActive,
     );
+    const activeParams = params.filter(
+      (param) => param.key.trim() && param.isActive,
+    );
+
+    window.electron.ipcRenderer.sendMessage('send-request', {
+      reqUrl: reqUrl.current.value,
+      headers: activeHeaders,
+      params: activeParams,
+    });
 
     window.electron.ipcRenderer.once('send-request', (arg) => {
       setResponse(arg);
@@ -29,7 +39,7 @@ export default function SuperApiClient() {
   }
 
   function handleAddHeader() {
-    setHeaders((prev) => [...prev, { key: '', value: '' }]);
+    setHeaders((prev) => [...prev, { key: '', value: '', isActive: true }]);
   }
 
   function handleChangeHeader(
@@ -39,6 +49,12 @@ export default function SuperApiClient() {
   ) {
     const copiedHeaders = [...headers];
     copiedHeaders[index][type] = value;
+    setHeaders(copiedHeaders);
+  }
+
+  function handleHeaderActiveToggle(index: number) {
+    const copiedHeaders = [...headers];
+    copiedHeaders[index].isActive = !copiedHeaders[index].isActive;
     setHeaders(copiedHeaders);
   }
 
@@ -54,7 +70,7 @@ export default function SuperApiClient() {
   }
 
   function handleAddParams() {
-    setParams((prev) => [...prev, { key: '', value: '' }]);
+    setParams((prev) => [...prev, { key: '', value: '', isActive: true }]);
   }
 
   function handleChangeParams(
@@ -64,6 +80,12 @@ export default function SuperApiClient() {
   ) {
     const copiedParams = [...params];
     copiedParams[index][type] = value;
+    setParams(copiedParams);
+  }
+
+  function handleParamsActiveToggle(index: number) {
+    const copiedParams = [...params];
+    copiedParams[index].isActive = !copiedParams[index].isActive;
     setParams(copiedParams);
   }
 
@@ -78,8 +100,12 @@ export default function SuperApiClient() {
     setParams((prev) => prev.filter((_, i) => i !== index));
   }
 
-  const headersCount = headers.filter((header) => header.key.trim()).length;
-  const paramsCount = params.filter((param) => param.key.trim()).length;
+  const headersCount = headers.filter(
+    (header) => header.key.trim() && header.isActive,
+  ).length;
+  const paramsCount = params.filter(
+    (param) => param.key.trim() && param.isActive,
+  ).length;
 
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
@@ -107,7 +133,7 @@ export default function SuperApiClient() {
           >
             Headers
             {headersCount > 0 && (
-              <span className="bg-gray-200 rounded px-[5px] py-[0.5px] ml-1">
+              <span className="bg-gray-200 rounded px-[5px] ml-1">
                 {headersCount}
               </span>
             )}
@@ -118,7 +144,7 @@ export default function SuperApiClient() {
           >
             Params
             {paramsCount > 0 && (
-              <span className="bg-gray-200 rounded px-[5px] py-[0.5px] ml-1">
+              <span className="bg-gray-200 rounded px-[5px] ml-1">
                 {paramsCount}
               </span>
             )}
@@ -143,18 +169,17 @@ export default function SuperApiClient() {
               {headers.map((header, i) => {
                 return (
                   <div
-                    key={header.key}
+                    key={i}
                     className="flex items-center justify-between mt-2"
                   >
                     <input
-                      key={header.key}
+                      type="text"
                       value={header.key}
                       onChange={(e) =>
                         handleChangeHeader('key', i, e.target.value)
                       }
-                      type="text"
                       placeholder="Key"
-                      className="w-[45%] border p-2 rounded outline-none bg-gray-200"
+                      className="w-[43%] border p-2 rounded outline-none bg-gray-200"
                     />
                     <input
                       type="text"
@@ -163,10 +188,17 @@ export default function SuperApiClient() {
                         handleChangeHeader('value', i, e.target.value)
                       }
                       placeholder="Value"
-                      className="w-[45%] border p-2 rounded outline-none bg-gray-200"
+                      className="w-[43%] border p-2 rounded outline-none bg-gray-200"
                     />
+                    <button onClick={() => handleHeaderActiveToggle(i)}>
+                      {header.isActive ? (
+                        <GoCheckCircleFill size={16} />
+                      ) : (
+                        <GoCheckCircle size={16} />
+                      )}
+                    </button>
                     <button onClick={() => handleDeleteHeader(i)}>
-                      <FiTrash2 size={15} color="red" />
+                      <FiTrash2 size={16} color="red" />
                     </button>
                   </div>
                 );
@@ -184,7 +216,7 @@ export default function SuperApiClient() {
               {params.map((param, i) => {
                 return (
                   <div
-                    key={param.key}
+                    key={i}
                     className="flex items-center justify-between mt-2"
                   >
                     <input
@@ -194,7 +226,7 @@ export default function SuperApiClient() {
                       }
                       type="text"
                       placeholder="Key"
-                      className="w-[45%] border p-2 rounded outline-none bg-gray-200"
+                      className="w-[43%] border p-2 rounded outline-none bg-gray-200"
                     />
                     <input
                       type="text"
@@ -203,10 +235,17 @@ export default function SuperApiClient() {
                         handleChangeParams('value', i, e.target.value)
                       }
                       placeholder="Value"
-                      className="w-[45%] border p-2 rounded outline-none bg-gray-200"
+                      className="w-[43%] border p-2 rounded outline-none bg-gray-200"
                     />
+                    <button onClick={() => handleParamsActiveToggle(i)}>
+                      {param.isActive ? (
+                        <GoCheckCircleFill size={16} />
+                      ) : (
+                        <GoCheckCircle size={16} />
+                      )}
+                    </button>
                     <button onClick={() => handleDeleteParams(i)}>
-                      <FiTrash2 size={15} color="red" />
+                      <FiTrash2 size={16} color="red" />
                     </button>
                   </div>
                 );
@@ -222,7 +261,9 @@ export default function SuperApiClient() {
             <Loading />
           </div>
         )}
-        {response && !loading && <pre>{JSON.stringify(response, null, 2)}</pre>}
+        {response && !loading && (
+          <pre className="font-geist">{JSON.stringify(response, null, 2)}</pre>
+        )}
       </div>
     </div>
   );
