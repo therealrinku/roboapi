@@ -8,10 +8,15 @@ export default function SuperApiClient() {
 
   const [reqType, setReqType] = useState<'GET' | 'POST'>('GET');
   const [response, setResponse] = useState(null);
+  const [responseHeaders, setResponseHeaders] = useState({});
   const [activeTab, setActiveTab] = useState<'Headers' | 'Params' | 'Body'>(
     'Headers',
   );
   const [loading, setLoading] = useState(false);
+
+  const [activeResponseTab, setActiveResponseTab] = useState<
+    'Response' | 'Headers'
+  >('Response');
 
   const [headers, setHeaders] = useState([
     { key: '', value: '', isActive: true },
@@ -40,7 +45,8 @@ export default function SuperApiClient() {
     });
 
     window.electron.ipcRenderer.once('send-request', (arg) => {
-      setResponse(arg);
+      setResponse(arg.responseJson);
+      setResponseHeaders(arg.headers);
       setLoading(false);
     });
   }
@@ -113,6 +119,7 @@ export default function SuperApiClient() {
   const paramsCount = params.filter(
     (param) => param.key.trim() && param.isActive,
   ).length;
+  const responseHeadersCount = Object.keys(responseHeaders).length;
 
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
@@ -129,6 +136,10 @@ export default function SuperApiClient() {
             >
               <option value="GET">GET</option>
               <option value="POST">POST</option>
+              <option value="POST">PATCH</option>
+              <option value="POST">DELETE</option>
+              <option value="POST">PUT</option>
+              <option value="POST">OPTIONS</option>
             </select>
             <input
               ref={reqUrl}
@@ -287,14 +298,54 @@ export default function SuperApiClient() {
         </div>
       </div>
 
-      <div className="w-[50%] pt-5 border-l min-h-screen px-5">
+      <div className="w-[50%] border-l min-h-screen">
         {loading && (
           <div className="h-screen w-full flex flex-col items-center justify-center">
             <Loading />
           </div>
         )}
         {response && !loading && (
-          <pre className="font-geist">{JSON.stringify(response, null, 2)}</pre>
+          <div>
+            <div className="flex items-center gap-5 border-b px-5 pb-2">
+              <button
+                className={`mt-2 flex items-center gap-2 ${activeResponseTab === 'Response' ? 'font-bold' : ''}`}
+                onClick={() => setActiveResponseTab('Response')}
+              >
+                Response
+              </button>
+              <button
+                className={`mt-2 flex items-center gap-2 ${activeResponseTab === 'Headers' ? 'font-bold' : ''}`}
+                onClick={() => setActiveResponseTab('Headers')}
+              >
+                Headers
+                {responseHeadersCount > 0 && (
+                  <span className="bg-gray-200 rounded px-[5px] ml-1">
+                    {responseHeadersCount}
+                  </span>
+                )}
+              </button>
+            </div>
+            {activeResponseTab === 'Response' && (
+              <pre className="font-geist overflow-y-auto h-screen pb-12 px-5 pt-2">
+                {JSON.stringify(response, null, 2)}
+              </pre>
+            )}
+            {activeResponseTab === 'Headers' && (
+              <div className="pt-2 overflow-y-auto h-screen">
+                {Object.entries(responseHeaders).map((key, value) => {
+                  return (
+                    <div
+                      key={value}
+                      className="flex items-center justify-between border-b py-2 px-5"
+                    >
+                      <p className="font-bold w-[50%] break-all">{key[0]}</p>
+                      <p className="w-[50%] break-all">{key[1]}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>

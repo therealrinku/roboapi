@@ -16,12 +16,19 @@ export function registerIpcHandlers(mainWindow: Electron.BrowserWindow | null) {
       `${args.reqUrl}?` + new URLSearchParams(paramsObj),
       {
         headers: headersObj,
-        body: JSON.stringify(args.body),
+        body: args.body ? JSON.stringify(args.body) : null,
         method: args.reqType,
       },
     );
     const json = await resp.json();
-    setTimeout(() => event.reply('send-request', json), 3000);
+    const headers: Record<string, string> = {};
+
+    resp.headers.forEach((value, key) => (headers[key] = value));
+    setTimeout(
+      () =>
+        event.reply('send-request', { responseJson: json, headers: headers }),
+      3000,
+    );
     // event.reply('send-request', json);
   });
 }
