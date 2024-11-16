@@ -7,8 +7,14 @@ export default function SuperApiClient() {
   const reqUrl = useRef(null);
 
   const [reqType, setReqType] = useState<'GET' | 'POST'>('GET');
-  const [response, setResponse] = useState(null);
-  const [responseHeaders, setResponseHeaders] = useState({});
+
+  const [response, setResponse] = useState({
+    responseCode: null,
+    responseStatusText: null,
+    responseData: null,
+    responseHeaders: {},
+  });
+
   const [activeTab, setActiveTab] = useState<'Headers' | 'Params' | 'Body'>(
     'Headers',
   );
@@ -38,15 +44,14 @@ export default function SuperApiClient() {
 
     window.electron.ipcRenderer.sendMessage('send-request', {
       reqType: reqType,
-      reqUrl: reqUrl.current.value,
+      reqUrl: reqUrl.current?.value,
       headers: activeHeaders,
       params: activeParams,
       body: body,
     });
 
     window.electron.ipcRenderer.once('send-request', (arg) => {
-      setResponse(arg.responseJson);
-      setResponseHeaders(arg.headers);
+      setResponse(arg);
       setLoading(false);
     });
   }
@@ -119,7 +124,7 @@ export default function SuperApiClient() {
   const paramsCount = params.filter(
     (param) => param.key.trim() && param.isActive,
   ).length;
-  const responseHeadersCount = Object.keys(responseHeaders).length;
+  const responseHeadersCount = Object.keys(response.responseHeaders).length;
 
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
@@ -130,16 +135,16 @@ export default function SuperApiClient() {
           </p>
           <div className="flex items-center mt-2 pr-3 bg-gray-200 rounded">
             <select
-              className="bg-inherit px-1 outline-none"
+              className="bg-inherit px-1 outline-none w-24 font-bold"
               value={reqType}
               onChange={(e) => setReqType(e.target.value)}
             >
               <option value="GET">GET</option>
               <option value="POST">POST</option>
-              <option value="POST">PATCH</option>
-              <option value="POST">DELETE</option>
-              <option value="POST">PUT</option>
-              <option value="POST">OPTIONS</option>
+              <option value="PATCH">PATCH</option>
+              <option value="DELETE">DELETE</option>
+              <option value="PUT">PUT</option>
+              <option value="OPTIONS">OPTIONS</option>
             </select>
             <input
               ref={reqUrl}
@@ -304,17 +309,20 @@ export default function SuperApiClient() {
             <Loading />
           </div>
         )}
-        {response && !loading && (
+        {response.responseCode && !loading && (
           <div>
             <div className="flex items-center gap-5 border-b px-5 pb-2">
               <button
-                className={`mt-2 flex items-center gap-2 ${activeResponseTab === 'Response' ? 'font-bold' : ''}`}
+                className={`mt-2 flex items-center ${activeResponseTab === 'Response' ? 'font-bold' : ''}`}
                 onClick={() => setActiveResponseTab('Response')}
               >
                 Response
+                <span className="bg-gray-200 rounded px-[5px] ml-1">
+                  {response.responseCode} {response.responseStatusText}
+                </span>
               </button>
               <button
-                className={`mt-2 flex items-center gap-2 ${activeResponseTab === 'Headers' ? 'font-bold' : ''}`}
+                className={`mt-2 flex items-center ${activeResponseTab === 'Headers' ? 'font-bold' : ''}`}
                 onClick={() => setActiveResponseTab('Headers')}
               >
                 Headers
@@ -327,12 +335,14 @@ export default function SuperApiClient() {
             </div>
             {activeResponseTab === 'Response' && (
               <pre className="font-geist overflow-y-auto h-screen pb-12 px-5 pt-2">
-                {JSON.stringify(response, null, 2)}
+                {response.responseData
+                  ? JSON.stringify(response.responseData, null, 2)
+                  : `${response.responseCode} ${response.responseStatusText}`}
               </pre>
             )}
             {activeResponseTab === 'Headers' && (
-              <div className="pt-2 overflow-y-auto h-screen">
-                {Object.entries(responseHeaders).map((key, value) => {
+              <div className="overflow-y-auto h-screen">
+                {Object.entries(response.responseHeaders).map((key, value) => {
                   return (
                     <div
                       key={value}
