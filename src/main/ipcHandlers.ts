@@ -14,7 +14,11 @@ export function registerIpcHandlers(mainWindow: Electron.BrowserWindow | null) {
 
     const resp = await fetch(
       `${args.reqUrl}?` + new URLSearchParams(paramsObj),
-      { headers: headersObj },
+      {
+        headers: headersObj,
+        body: JSON.stringify(args.body),
+        method: args.reqType,
+      },
     );
     const json = await resp.json();
     setTimeout(() => event.reply('send-request', json), 3000);

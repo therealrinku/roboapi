@@ -5,8 +5,12 @@ import Loading from '../components/Loading';
 
 export default function SuperApiClient() {
   const reqUrl = useRef(null);
+
+  const [reqType, setReqType] = useState<'GET' | 'POST'>('GET');
   const [response, setResponse] = useState(null);
-  const [activeTab, setActiveTab] = useState('Headers');
+  const [activeTab, setActiveTab] = useState<'Headers' | 'Params' | 'Body'>(
+    'Headers',
+  );
   const [loading, setLoading] = useState(false);
 
   const [headers, setHeaders] = useState([
@@ -15,6 +19,7 @@ export default function SuperApiClient() {
   const [params, setParams] = useState([
     { key: '', value: '', isActive: true },
   ]);
+  const [body, setBody] = useState<any>('');
 
   async function sendReq() {
     setLoading(true);
@@ -27,9 +32,11 @@ export default function SuperApiClient() {
     );
 
     window.electron.ipcRenderer.sendMessage('send-request', {
+      reqType: reqType,
       reqUrl: reqUrl.current.value,
       headers: activeHeaders,
       params: activeParams,
+      body: body,
     });
 
     window.electron.ipcRenderer.once('send-request', (arg) => {
@@ -115,6 +122,14 @@ export default function SuperApiClient() {
             <FiFile /> Unsaved Request
           </p>
           <div className="flex items-center mt-2 pr-3 bg-gray-200 rounded">
+            <select
+              className="bg-inherit px-1 outline-none"
+              value={reqType}
+              onChange={(e) => setReqType(e.target.value)}
+            >
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+            </select>
             <input
               ref={reqUrl}
               placeholder="Request Url"
@@ -250,6 +265,23 @@ export default function SuperApiClient() {
                   </div>
                 );
               })}
+            </div>
+          )}
+          {activeTab === 'Body' && (
+            <div>
+              <div>
+                <button
+                  // onClick={handleAddParams}
+                  className="mt-2 flex items-center gap-2"
+                >
+                  JSON
+                </button>
+              </div>
+              <textarea
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                className="border rounded mt-2 w-full h-[50vh] outline-none p-2"
+              ></textarea>
             </div>
           )}
         </div>
