@@ -16,7 +16,7 @@ export function registerIpcHandlers(mainWindow: Electron.BrowserWindow | null) {
       `${args.reqUrl}?` + new URLSearchParams(paramsObj),
       {
         headers: headersObj,
-        body: args.body ? JSON.stringify(args.body) : null,
+        body: args.body ? args.body : null,
         method: args.reqType,
       },
     );

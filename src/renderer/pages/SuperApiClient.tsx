@@ -133,7 +133,7 @@ export default function SuperApiClient() {
           <p className="font-bold flex items-center gap-2">
             <FiFile /> Unsaved Request
           </p>
-          <div className="flex items-center mt-2 pr-3 bg-gray-200 rounded">
+          <div className="flex items-center mt-2 pr-3 bg-gray-100 rounded">
             <select
               className="bg-inherit px-1 outline-none w-24 font-bold"
               value={reqType}
@@ -164,7 +164,7 @@ export default function SuperApiClient() {
           >
             Headers
             {headersCount > 0 && (
-              <span className="bg-gray-200 rounded px-[5px] ml-1">
+              <span className="bg-gray-100 rounded px-[5px] ml-1">
                 {headersCount}
               </span>
             )}
@@ -175,7 +175,7 @@ export default function SuperApiClient() {
           >
             Params
             {paramsCount > 0 && (
-              <span className="bg-gray-200 rounded px-[5px] ml-1">
+              <span className="bg-gray-100 rounded px-[5px] ml-1">
                 {paramsCount}
               </span>
             )}
@@ -210,7 +210,7 @@ export default function SuperApiClient() {
                         handleChangeHeader('key', i, e.target.value)
                       }
                       placeholder="Key"
-                      className="w-[43%] border p-2 rounded outline-none bg-gray-200"
+                      className="w-[43%] border p-2 rounded outline-none bg-gray-100"
                     />
                     <input
                       type="text"
@@ -219,7 +219,7 @@ export default function SuperApiClient() {
                         handleChangeHeader('value', i, e.target.value)
                       }
                       placeholder="Value"
-                      className="w-[43%] border p-2 rounded outline-none bg-gray-200"
+                      className="w-[43%] border p-2 rounded outline-none bg-gray-100"
                     />
                     <button onClick={() => handleHeaderActiveToggle(i)}>
                       {header.isActive ? (
@@ -257,7 +257,7 @@ export default function SuperApiClient() {
                       }
                       type="text"
                       placeholder="Key"
-                      className="w-[43%] border p-2 rounded outline-none bg-gray-200"
+                      className="w-[43%] border p-2 rounded outline-none bg-gray-100"
                     />
                     <input
                       type="text"
@@ -266,7 +266,7 @@ export default function SuperApiClient() {
                         handleChangeParams('value', i, e.target.value)
                       }
                       placeholder="Value"
-                      className="w-[43%] border p-2 rounded outline-none bg-gray-200"
+                      className="w-[43%] border p-2 rounded outline-none bg-gray-100"
                     />
                     <button onClick={() => handleParamsActiveToggle(i)}>
                       {param.isActive ? (
@@ -296,7 +296,7 @@ export default function SuperApiClient() {
               <textarea
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
-                className="border rounded mt-2 w-full h-[50vh] outline-none p-2"
+                className="border rounded mt-2 w-full h-[73vh] outline-none p-2 bg-gray-100"
               ></textarea>
             </div>
           )}
@@ -310,14 +310,14 @@ export default function SuperApiClient() {
           </div>
         )}
         {response.responseCode && !loading && (
-          <div>
+          <div className="bg-gray-100">
             <div className="flex items-center gap-5 border-b px-5 pb-2">
               <button
                 className={`mt-2 flex items-center ${activeResponseTab === 'Response' ? 'font-bold' : ''}`}
                 onClick={() => setActiveResponseTab('Response')}
               >
                 Response
-                <span className="bg-gray-200 rounded px-[5px] ml-1">
+                <span className="rounded px-[5px] ml-1 border">
                   {response.responseCode} {response.responseStatusText}
                 </span>
               </button>
@@ -327,7 +327,7 @@ export default function SuperApiClient() {
               >
                 Headers
                 {responseHeadersCount > 0 && (
-                  <span className="bg-gray-200 rounded px-[5px] ml-1">
+                  <span className="rounded px-[5px] ml-1 border">
                     {responseHeadersCount}
                   </span>
                 )}
