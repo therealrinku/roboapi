@@ -16,7 +16,10 @@ export function registerIpcHandlers(mainWindow: Electron.BrowserWindow | null) {
       `${args.reqUrl}?` + new URLSearchParams(paramsObj),
       {
         headers: headersObj,
-        body: args.body ? args.body : null,
+        body:
+          !['get', 'head'].includes(args.reqType.toLowerCase()) && args.body
+            ? args.body
+            : null,
         method: args.reqType,
       },
     );
