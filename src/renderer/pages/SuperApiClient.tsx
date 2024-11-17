@@ -145,6 +145,7 @@ export default function SuperApiClient() {
               <option value="DELETE">DELETE</option>
               <option value="PUT">PUT</option>
               <option value="OPTIONS">OPTIONS</option>
+              <option value="HEAD">HEAD</option>
             </select>
             <input
               ref={reqUrl}
