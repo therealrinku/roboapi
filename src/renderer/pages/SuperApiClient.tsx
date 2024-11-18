@@ -9,6 +9,7 @@ export default function SuperApiClient() {
   const [reqType, setReqType] = useState<'GET' | 'POST'>('GET');
 
   const [response, setResponse] = useState({
+    requestUrl: null,
     responseCode: null,
     responseStatusText: null,
     responseData: null,
@@ -125,7 +126,10 @@ export default function SuperApiClient() {
     (param) => param.key.trim() && param.isActive,
   ).length;
   const responseHeadersCount = Object.keys(response.responseHeaders).length;
-
+  const isHTMLResponse =
+    response.responseHeaders['content-type']?.includes('text/html');
+  const isJSONResponse =
+    response.responseHeaders['content-type']?.includes('application/json');
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
       <div className="w-[50%] px-5 gap-3 mt-5">
@@ -335,15 +339,18 @@ export default function SuperApiClient() {
               </button>
             </div>
             {activeResponseTab === 'Response' && (
-              <pre className="font-geist overflow-y-auto h-screen pb-12 px-5 pt-2">
-                {response.responseData
-                  ? JSON.stringify(response.responseData, null, 2)
-                  : `${response.responseCode} ${response.responseStatusText}`}
+              <pre className="h-screen overflow-y-auto px-5 pt-5 pb-12 w-full break-all">
+                {isHTMLResponse
+                  ? response.responseData
+                  : isJSONResponse
+                    ? JSON.stringify(response.responseData, null, 2)
+                    : `${response.responseCode} ${response.responseStatusText}`}
               </pre>
             )}
             {activeResponseTab === 'Headers' && (
               <div className="overflow-y-auto h-screen">
                 {Object.entries(response.responseHeaders).map((key, value) => {
+                  console.log(key, value);
                   return (
                     <div
                       key={value}

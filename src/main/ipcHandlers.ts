@@ -4,60 +4,44 @@ export function registerIpcHandlers(mainWindow: Electron.BrowserWindow | null) {
   ipcMain.on('send-request', async (event, args) => {
     const headersObj: Record<string, string> = {};
     const paramsObj: Record<string, string> = {};
-
     args.headers.map((header: { key: string; value: string }) => {
       headersObj[header.key] = header.value;
     });
     args.params.map((param: { key: string; value: string }) => {
       paramsObj[param.key] = param.value;
     });
+    const reqUrl = `${args.reqUrl}${new URLSearchParams(paramsObj)}`;
+    const reqObj = {
+      headers: headersObj,
+      body:
+        !['get', 'head'].includes(args.reqType.toLowerCase()) && args.body
+          ? args.body
+          : null,
+      method: args.reqType,
+    };
 
-    const resp = await fetch(
-      `${args.reqUrl}?` + new URLSearchParams(paramsObj),
-      {
-        headers: headersObj,
-        body:
-          !['get', 'head'].includes(args.reqType.toLowerCase()) && args.body
-            ? args.body
-            : null,
-        method: args.reqType,
-      },
-    );
+    const resp = await fetch(reqUrl, reqObj);
+
     const headers: Record<string, string> = {};
-
     resp.headers.forEach((value, key) => (headers[key] = value));
 
-    if (
-      resp.status !== 200 &&
-      resp.status !== 201 &&
-      resp.status !== 204 &&
-      resp.status !== 202 &&
-      resp.status !== 203
-    ) {
-      setTimeout(
-        () =>
-          event.reply('send-request', {
-            responseData: null,
-            responseHeaders: headers,
-            responseCode: resp.status,
-            responseStatusText: resp.statusText,
-          }),
-        3000,
-      );
-      return;
+    let responseData = null;
+    const contentType = resp.headers.get('Content-Type');
+
+    if (contentType?.includes('application/json')) {
+      responseData = await resp.json();
+    } else if (contentType?.includes('text/html')) {
+      responseData = await resp.text();
     }
 
-    const json = await resp.json();
+    const eventReplyObj = {
+      responseData: responseData,
+      responseHeaders: headers,
+      responseCode: resp.status,
+      responseStatusText: resp.statusText,
+      requestUrl: args.reqUrl
+    };
 
-    setTimeout(
-      () =>
-        event.reply('send-request', {
-          responseData: json,
-          responseHeaders: headers,
-          responseCode: resp.status,
-          responseStatusText: resp.statusText,
-        }),
-      3000,
-    );
+    event.reply('send-request', eventReplyObj);
   });
 }
