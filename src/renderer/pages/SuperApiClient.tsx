@@ -14,6 +14,7 @@ export default function SuperApiClient() {
     responseStatusText: null,
     responseData: null,
     responseHeaders: {},
+    responseCookies: {},
   });
 
   const [activeTab, setActiveTab] = useState<'Headers' | 'Params' | 'Body'>(
@@ -22,7 +23,7 @@ export default function SuperApiClient() {
   const [loading, setLoading] = useState(false);
 
   const [activeResponseTab, setActiveResponseTab] = useState<
-    'Response' | 'Headers'
+    'Response' | 'Headers' | 'Cookies'
   >('Response');
 
   const [headers, setHeaders] = useState([
@@ -126,6 +127,7 @@ export default function SuperApiClient() {
     (param) => param.key.trim() && param.isActive,
   ).length;
   const responseHeadersCount = Object.keys(response.responseHeaders).length;
+  const responseCookieCount = Object.keys(response.responseCookies).length;
   const isHTMLResponse =
     response.responseHeaders['content-type']?.includes('text/html');
   const isJSONResponse =
@@ -337,6 +339,17 @@ export default function SuperApiClient() {
                   </span>
                 )}
               </button>
+              <button
+                className={`mt-2 flex items-center ${activeResponseTab === 'Cookies' ? 'font-bold' : ''}`}
+                onClick={() => setActiveResponseTab('Cookies')}
+              >
+                Cookies
+                {responseCookieCount > 0 && (
+                  <span className="rounded px-[5px] ml-1 border">
+                    {responseCookieCount}
+                  </span>
+                )}
+              </button>
             </div>
             {activeResponseTab === 'Response' && (
               <pre className="h-screen overflow-y-auto px-5 pt-5 pb-12 w-full break-all">
@@ -350,7 +363,21 @@ export default function SuperApiClient() {
             {activeResponseTab === 'Headers' && (
               <div className="overflow-y-auto h-screen">
                 {Object.entries(response.responseHeaders).map((key, value) => {
-                  console.log(key, value);
+                  return (
+                    <div
+                      key={value}
+                      className="flex items-center justify-between border-b py-2 px-5"
+                    >
+                      <p className="font-bold w-[50%] break-all">{key[0]}</p>
+                      <p className="w-[50%] break-all">{key[1]}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {activeResponseTab === 'Cookies' && (
+              <div className="overflow-y-auto h-screen">
+                {Object.entries(response.responseCookies).map((key, value) => {
                   return (
                     <div
                       key={value}

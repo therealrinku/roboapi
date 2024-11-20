@@ -11,20 +11,31 @@ export function registerIpcHandlers(mainWindow: Electron.BrowserWindow | null) {
       paramsObj[param.key] = param.value;
     });
     const reqUrl = `${args.reqUrl}${new URLSearchParams(paramsObj)}`;
-    const reqObj = {
+    const reqObj: RequestInit = {
       headers: headersObj,
       body:
         !['get', 'head'].includes(args.reqType.toLowerCase()) && args.body
           ? args.body
           : null,
       method: args.reqType,
+      credentials: 'include',
     };
 
     try {
       const resp = await fetch(reqUrl, reqObj);
 
       const headers: Record<string, string> = {};
-      resp.headers.forEach((value, key) => (headers[key] = value));
+      const cookies: Record<string, string> = {};
+      resp.headers.forEach((value, key) => {
+        headers[key] = value;
+      });
+      resp.headers.forEach((value, key) => {
+        if (key === 'set-cookie') {
+          const cookie = value.split(';')[0];
+          const [cookieKey, cookieValue] = cookie.split('=');
+          cookies[cookieKey] = cookieValue;
+        }
+      });
 
       let responseData = null;
       const contentType = resp.headers.get('Content-Type');
@@ -38,6 +49,7 @@ export function registerIpcHandlers(mainWindow: Electron.BrowserWindow | null) {
       const eventReplyObj = {
         responseData: responseData,
         responseHeaders: headers,
+        responseCookies: cookies,
         responseCode: resp.status,
         responseStatusText: resp.statusText,
         requestUrl: args.reqUrl,
@@ -49,6 +61,7 @@ export function registerIpcHandlers(mainWindow: Electron.BrowserWindow | null) {
       const eventReplyObj = {
         responseData: null,
         responseHeaders: {},
+        responseCookies: {},
         responseCode: '404',
         responseStatusText: 'Not Found',
         requestUrl: args.reqUrl,
