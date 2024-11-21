@@ -1,5 +1,12 @@
 import { useRef, useState } from 'react';
-import { FiClipboard, FiFile, FiSend, FiTrash2 } from 'react-icons/fi';
+import {
+  FiBookmark,
+  FiChevronDown,
+  FiClipboard,
+  FiFile,
+  FiSend,
+  FiTrash2,
+} from 'react-icons/fi';
 import { GoCheckCircle, GoCheckCircleFill } from 'react-icons/go';
 import Loading from '../components/Loading';
 
@@ -137,7 +144,7 @@ export default function SuperApiClient() {
       <div className="w-[50%] px-5 gap-3 mt-5">
         <div>
           <p className="font-bold flex items-center gap-2">
-            <FiFile /> Unsaved Request
+            <FiBookmark size={15} /> Unsaved
           </p>
           <div className="flex items-center mt-2 pr-3 bg-gray-100 rounded">
             <select
@@ -353,23 +360,25 @@ export default function SuperApiClient() {
             </div>
             {activeResponseTab === 'Response' && (
               <div>
-                <button
-                  onClick={() =>
-                    navigator.clipboard.writeText(
-                      JSON.stringify(response.responseData),
-                    )
-                  }
-                  className="py-2 px-5 flex items-center gap-2 ml-auto absolute bg-gray-100 right-0"
-                >
-                  <FiClipboard size={15} />
-                  Copy
-                </button>
+                {response.responseData && (
+                  <button
+                    onClick={() =>
+                      navigator.clipboard.writeText(
+                        JSON.stringify(response.responseData),
+                      )
+                    }
+                    className="py-2 px-5 flex items-center gap-2 ml-auto absolute bg-gray-100 right-0"
+                  >
+                    <FiClipboard size={15} />
+                    Copy
+                  </button>
+                )}
                 <pre className="h-screen overflow-y-auto px-5 pt-2 pb-16 w-full break-all">
                   {isHTMLResponse
                     ? response.responseData
                     : isJSONResponse
                       ? JSON.stringify(response.responseData, null, 2)
-                      : `${response.responseCode} ${response.responseStatusText}`}
+                      : "<NO RESPONSE>"}
                 </pre>
               </div>
             )}
