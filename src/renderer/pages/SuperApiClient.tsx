@@ -24,10 +24,14 @@ export default function SuperApiClient() {
     responseCookies: {},
   });
 
-  const [activeTab, setActiveTab] = useState<'Headers' | 'Params' | 'Body'>(
-    'Headers',
-  );
+  const [activeTab, setActiveTab] = useState<
+    'Headers' | 'Params' | 'Body' | 'Authorization'
+  >('Headers');
   const [loading, setLoading] = useState(false);
+  const [bearerToken, setBearerToken] = useState<string | null>('');
+  const [isBearerTokenActive, setIsBearerTokenActive] = useState(true);
+  const [authorizationType, setAuthorizationType] =
+    useState<'bearer'>('bearer');
 
   const [activeResponseTab, setActiveResponseTab] = useState<
     'Response' | 'Headers' | 'Cookies'
@@ -57,6 +61,7 @@ export default function SuperApiClient() {
       headers: activeHeaders,
       params: activeParams,
       body: body,
+      bearerToken: isBearerTokenActive ? bearerToken : null,
     });
 
     window.electron.ipcRenderer.once('send-request', (arg) => {
@@ -133,8 +138,12 @@ export default function SuperApiClient() {
   const paramsCount = params.filter(
     (param) => param.key.trim() && param.isActive,
   ).length;
+  const authorizationExists =
+    isBearerTokenActive && bearerToken && bearerToken.trim().length > 0;
+
   const responseHeadersCount = Object.keys(response.responseHeaders).length;
   const responseCookieCount = Object.keys(response.responseCookies).length;
+
   const isHTMLResponse =
     response.responseHeaders['content-type']?.includes('text/html');
   const isJSONResponse =
@@ -193,6 +202,13 @@ export default function SuperApiClient() {
                 {paramsCount}
               </span>
             )}
+          </button>
+          <button
+            onClick={() => setActiveTab('Authorization')}
+            className={`${activeTab === 'Authorization' ? 'font-bold' : ''}`}
+          >
+            Authorization
+            {authorizationExists && <span className="ml-1">&middot;</span>}
           </button>
           <button
             onClick={() => setActiveTab('Body')}
@@ -297,6 +313,39 @@ export default function SuperApiClient() {
               })}
             </div>
           )}
+          {activeTab === 'Authorization' && (
+            <div>
+              <button
+                onClick={() => setAuthorizationType('bearer')}
+                className={`mt-2 flex items-center gap-2 ${authorizationType === 'bearer' ? 'font-bold' : ''}`}
+              >
+                Bearer Token
+              </button>
+              {authorizationType === 'bearer' && (
+                <div className="flex items-center justify-between mt-2">
+                  <input
+                    value={bearerToken ?? ''}
+                    onChange={(e) => setBearerToken(e.target.value)}
+                    type="text"
+                    placeholder="Bearer Token"
+                    className="w-[86%] border p-2 rounded outline-none bg-gray-100"
+                  />
+                  <button
+                    onClick={() => setIsBearerTokenActive((prev) => !prev)}
+                  >
+                    {isBearerTokenActive ? (
+                      <GoCheckCircleFill size={16} />
+                    ) : (
+                      <GoCheckCircle size={16} />
+                    )}
+                  </button>
+                  <button onClick={() => setBearerToken(null)}>
+                    <FiTrash2 size={16} color="red" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
           {activeTab === 'Body' && (
             <div>
               <div>
@@ -378,7 +427,7 @@ export default function SuperApiClient() {
                     ? response.responseData
                     : isJSONResponse
                       ? JSON.stringify(response.responseData, null, 2)
-                      : "<NO RESPONSE>"}
+                      : '<NO RESPONSE>'}
                 </pre>
               </div>
             )}
