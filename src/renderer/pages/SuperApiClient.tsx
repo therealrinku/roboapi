@@ -1,21 +1,27 @@
 import { useRef, useState } from 'react';
 import {
   FiBookmark,
-  FiChevronDown,
+  FiChevronLeft,
   FiClipboard,
-  FiFile,
+  FiPower,
   FiSend,
   FiTrash2,
 } from 'react-icons/fi';
 import { GoCheckCircle, GoCheckCircleFill } from 'react-icons/go';
 import Loading from '../components/Loading';
+import useSuperApp from '../hooks/useSuperApp';
+import {
+  ISuperApiRequestTypes,
+  ISuperApiResponse,
+  ISuperApiTabs,
+} from '../global';
 
 export default function SuperApiClient() {
-  const reqUrl = useRef(null);
+  const reqUrl = useRef<HTMLInputElement>(null);
+  const { quitApp } = useSuperApp();
 
-  const [reqType, setReqType] = useState<'GET' | 'POST'>('GET');
-
-  const [response, setResponse] = useState({
+  const [reqType, setReqType] = useState<ISuperApiRequestTypes>('GET');
+  const [response, setResponse] = useState<ISuperApiResponse>({
     requestUrl: null,
     responseCode: null,
     responseStatusText: null,
@@ -24,10 +30,8 @@ export default function SuperApiClient() {
     responseCookies: {},
   });
 
-  const [activeTab, setActiveTab] = useState<
-    'Headers' | 'Params' | 'Body' | 'Authorization'
-  >('Headers');
-  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<ISuperApiTabs>('Headers');
+  const [loading, setLoading] = useState<boolean>(false);
   const [bearerToken, setBearerToken] = useState<string | null>('');
   const [isBearerTokenActive, setIsBearerTokenActive] = useState(true);
   const [authorizationType, setAuthorizationType] =
@@ -65,7 +69,7 @@ export default function SuperApiClient() {
     });
 
     window.electron.ipcRenderer.once('send-request', (arg) => {
-      setResponse(arg);
+      setResponse(arg as ISuperApiResponse);
       setLoading(false);
     });
   }
@@ -151,15 +155,28 @@ export default function SuperApiClient() {
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
       <div className="w-[50%] px-5 gap-3 mt-5">
+        <div className="absolute bottom-0 left-0 pl-5 py-2 border-t w-[50%]">
+          <button
+            className="flex items-center gap-2 font-bold"
+            onClick={quitApp}
+          >
+            <FiPower size={15} /> Quit
+          </button>
+        </div>
+
         <div>
-          <p className="font-bold flex items-center gap-2">
-            <FiBookmark size={15} /> Unsaved
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="font-bold flex items-center gap-2">
+              <FiBookmark size={15} /> Unsaved
+            </p>
+          </div>
           <div className="flex items-center mt-2 pr-3 bg-gray-100 rounded">
             <select
               className="bg-inherit px-1 outline-none w-24 font-bold"
               value={reqType}
-              onChange={(e) => setReqType(e.target.value)}
+              onChange={(e) =>
+                setReqType(e.target.value as ISuperApiRequestTypes)
+              }
             >
               <option value="GET">GET</option>
               <option value="POST">POST</option>
@@ -218,7 +235,7 @@ export default function SuperApiClient() {
           </button>
         </div>
 
-        <div className="mt-2 border-t max-h-[80vh] overflow-y-auto">
+        <div className="mt-2 border-t max-h-[80vh] overflow-y-auto pb-5">
           {activeTab === 'Headers' && (
             <div>
               <button

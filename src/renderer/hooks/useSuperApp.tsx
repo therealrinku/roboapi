@@ -9,5 +9,9 @@ export default function useSuperApp() {
     setApp(appName)
   }
 
-  return { app, loadApp};
+  function quitApp(){
+    setApp(null);
+  }
+
+  return { app, loadApp, quitApp};
 }
