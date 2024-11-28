@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import Landing from './pages/Landing';
 import useSuperApp from './hooks/useSuperApp';
 import SuperApiClient from './pages/SuperApiClient';
+import SuperSqlClient from './pages/SuperSqlClient';
 
 export default function App() {
   return (
@@ -45,6 +46,9 @@ function SetupApp() {
 
   if (app === 'super_api_client') {
     return <SuperApiClient />;
+  }
+  if(app == "super_sql_client"){
+    return <SuperSqlClient/>;
   }
 
   return <Landing />;

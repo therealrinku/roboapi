@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import {
   FiBookmark,
-  FiChevronLeft,
   FiClipboard,
   FiPower,
   FiSend,
