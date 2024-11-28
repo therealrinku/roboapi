@@ -2,7 +2,7 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-export type Channels = 'send-request'
+export type Channels = 'send-api-request' | 'connect-to-db' | 'disconnect-from-db';
 
 const electronHandler = {
   ipcRenderer: {

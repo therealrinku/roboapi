@@ -1,12 +1,44 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { FiPower } from 'react-icons/fi';
 import Loading from '../components/Loading';
 import useSuperApp from '../hooks/useSuperApp';
 
 export default function SuperSqlClient() {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const caInputRef = useRef<HTMLInputElement>(null);
   const { quitApp } = useSuperApp();
   const [loading, setLoading] = useState<boolean>(false);
   const [connectedDb, setConnectedDb] = useState(null);
+
+  function connect() {
+    setLoading(true);
+    window.electron.ipcRenderer.sendMessage('connect-to-db', {
+      connectionUri: inputRef.current?.value,
+      ca: caInputRef?.current?.value,
+    });
+
+    window.electron.ipcRenderer.once('connect-to-db', (resp) => {
+      if (resp.error) {
+        alert('Something went wrong while connecting to the db');
+      } else {
+        setConnectedDb(inputRef.current?.value);
+      }
+      setLoading(false);
+    });
+  }
+
+  function disconnect() {
+    setLoading(true);
+    window.electron.ipcRenderer.sendMessage('disconnect-from-db');
+    window.electron.ipcRenderer.once('disconnect-from-db', (resp) => {
+      if (resp.error) {
+        alert('Something went wrong while disconnecting from the db');
+      } else {
+        setConnectedDb(null);
+      }
+      setLoading(false);
+    });
+  }
 
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
@@ -25,11 +57,18 @@ export default function SuperSqlClient() {
             Postgres
           </button>
           <input
+            ref={inputRef}
             type="text"
+            disabled={loading || connectedDb ? true : false}
             className="bg-gray-100 rounded p-2 w-full outline-none"
             placeholder="Connection Url"
           />
-          <button className='w-[25%] bg-green-500 rounded p-2 text-white font-bold'>Connect</button>
+          <button
+            className={`w-[25%] ${connectedDb ? 'bg-red-500' : 'bg-green-500'} rounded p-2 text-white font-bold`}
+            onClick={connectedDb ? disconnect : connect}
+          >
+            {connectedDb ? 'Disconnect' : 'Connect'}
+          </button>
         </div>
       </div>
 

@@ -58,7 +58,7 @@ export default function SuperApiClient() {
       (param) => param.key.trim() && param.isActive,
     );
 
-    window.electron.ipcRenderer.sendMessage('send-request', {
+    window.electron.ipcRenderer.sendMessage('send-api-request', {
       reqType: reqType,
       reqUrl: reqUrl.current?.value,
       headers: activeHeaders,
@@ -67,7 +67,7 @@ export default function SuperApiClient() {
       bearerToken: isBearerTokenActive ? bearerToken : null,
     });
 
-    window.electron.ipcRenderer.once('send-request', (arg) => {
+    window.electron.ipcRenderer.once('send-api-request', (arg) => {
       setResponse(arg as ISuperApiResponse);
       setLoading(false);
     });

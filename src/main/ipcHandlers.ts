@@ -1,7 +1,10 @@
 import { ipcMain } from 'electron';
+import pg from 'pg';
 
-export function registerIpcHandlers(mainWindow: Electron.BrowserWindow | null) {
-  ipcMain.on('send-request', async (event, args) => {
+export function registerSuperApiClientIpcHandlers(
+  _mainWindow: Electron.BrowserWindow | null,
+) {
+  ipcMain.on('send-api-request', async (event, args) => {
     const headersObj: Record<string, string> = {};
     const paramsObj: Record<string, string> = {};
     args.headers.map((header: { key: string; value: string }) => {
@@ -63,9 +66,9 @@ export function registerIpcHandlers(mainWindow: Electron.BrowserWindow | null) {
         requestUrl: args.reqUrl,
       };
 
-      event.reply('send-request', eventReplyObj);
+      event.reply('send-api-request', eventReplyObj);
     } catch (err) {
-      console.log(err,"err");
+      console.log(err, 'err');
       // throw 404 if some weird error happens, for now at least :)
       const eventReplyObj = {
         responseData: null,
@@ -76,7 +79,33 @@ export function registerIpcHandlers(mainWindow: Electron.BrowserWindow | null) {
         requestUrl: args.reqUrl,
       };
 
-      event.reply('send-request', eventReplyObj);
+      event.reply('send-api-request', eventReplyObj);
+    }
+  });
+}
+
+export function registerSuperSqlClientIpcHandlers(
+  _mainWindow: Electron.BrowserWindow | null,
+) {
+  let pgPool:pg.Pool;
+  ipcMain.on('connect-to-db', async (event, args) => {
+    try {
+      pgPool = new pg.Pool({
+        connectionString: args.connectionUri
+      });
+      await pgPool.query('SELECT NOW()');
+      event.reply('connect-to-db', { success: true });
+    } catch (err) {
+      event.reply('connect-to-db', { error: true });
+    }
+  });
+  ipcMain.on('disconnect-from-db', async (event, args) => {
+    try {
+      await pgPool.end();
+      event.reply('disconnect-from-db', { success: true });
+    } catch (err) {
+      console.log(err)
+      event.reply('disconnect-from-db', { error: true });
     }
   });
 }
