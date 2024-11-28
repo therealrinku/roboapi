@@ -87,11 +87,11 @@ export function registerSuperApiClientIpcHandlers(
 export function registerSuperSqlClientIpcHandlers(
   _mainWindow: Electron.BrowserWindow | null,
 ) {
-  let pgPool:pg.Pool;
+  let pgPool: pg.Pool;
   ipcMain.on('connect-to-db', async (event, args) => {
     try {
       pgPool = new pg.Pool({
-        connectionString: args.connectionUri
+        connectionString: args.connectionUri,
       });
       await pgPool.query('SELECT NOW()');
       event.reply('connect-to-db', { success: true });
@@ -99,13 +99,24 @@ export function registerSuperSqlClientIpcHandlers(
       event.reply('connect-to-db', { error: true });
     }
   });
+
   ipcMain.on('disconnect-from-db', async (event, args) => {
     try {
       await pgPool.end();
       event.reply('disconnect-from-db', { success: true });
     } catch (err) {
-      console.log(err)
+      console.log(err);
       event.reply('disconnect-from-db', { error: true });
+    }
+  });
+
+  ipcMain.on('send-db-query', async (event, args) => {
+    try {
+      const resp = await pgPool.query(`${args.query}`);
+      event.reply('send-db-query', { success: true, response: JSON.stringify(resp)});
+    } catch (err) {
+      console.log(err);
+      event.reply('send-db-query', { error: true });
     }
   });
 }
