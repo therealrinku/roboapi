@@ -38,6 +38,7 @@ export default function SuperSqlClient() {
         alert('Something went wrong while disconnecting from the db');
       } else {
         setConnectedDb(null);
+        setDbResponse(null);
       }
       setLoading(false);
     });
@@ -93,7 +94,26 @@ export default function SuperSqlClient() {
 
         {connectedDb && (
           <div className="mt-5 flex flex-col gap-2">
-            <p className="font-bold">Query</p>
+            <p className="font-bold">Quick Query Actions</p>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() =>
+                  queryRef.current
+                    ? (queryRef.current.value =
+                        "SELECT table_name FROM information_schema.tables WHERE table_schema='public'")
+                    : () => {}
+                }
+              >
+                Fetch all tables
+              </button>
+              <button
+                onClick={() =>
+                  queryRef.current ? (queryRef.current.value = '') : () => {}
+                }
+              >
+                Clear Query
+              </button>
+            </div>
             <textarea
               ref={queryRef}
               className="bg-gray-100 w-full h-[55vh] p-2 outline-none rounded"
@@ -117,13 +137,14 @@ export default function SuperSqlClient() {
         )}
 
         {!loading && dbResponse && (
-          <table className="min-w-full table-auto border-collapse border border-gray-300 min-h-screen overflow-y-auto">
+          <table className="min-w-full table-auto border-collapse border-r border-b min-h-screen overflow-auto border-red-500">
             <thead>
               <tr>
                 {Object.keys(rows[0]).map((key, colIndex) => (
                   <th
                     key={colIndex}
-                    className="border border-gray-300 px-4 py-2 text-left bg-gray-100"
+                    title={key}
+                    className="border border-gray-300 px-4 py-2 text-left bg-gray-200"
                   >
                     {key}
                   </th>
@@ -131,10 +152,11 @@ export default function SuperSqlClient() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, rowIndex: number) => (
+              {rows.map((row: any, rowIndex: number) => (
                 <tr key={rowIndex}>
-                  {Object.values(row).map((col, colIndex) => (
+                  {Object.values(row).map((col: any, colIndex) => (
                     <td
+                      title={col}
                       key={colIndex}
                       className="border border-gray-300 px-4 py-2"
                     >
