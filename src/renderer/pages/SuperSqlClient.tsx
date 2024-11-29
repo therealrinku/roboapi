@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { FiPower } from 'react-icons/fi';
+import { FiClipboard, FiPower } from 'react-icons/fi';
 import Loading from '../components/Loading';
 import useSuperApp from '../hooks/useSuperApp';
 
@@ -62,7 +62,7 @@ export default function SuperSqlClient() {
   const rows = dbResponse ? JSON.parse(dbResponse).rows : [];
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
-      <div className="w-[50%] px-5 gap-3 mt-5">
+      <div className="w-[45%] px-5 gap-3 mt-5">
         <div className="absolute bottom-0 left-0 pl-5 py-2 border-t w-[50%]">
           <button
             className="flex items-center gap-2 font-bold"
@@ -129,7 +129,7 @@ export default function SuperSqlClient() {
         )}
       </div>
 
-      <div className="w-[50%] border-l min-h-screen">
+      <div className="w-[55%] border-l min-h-screen">
         {loading && (
           <div className="h-screen w-full flex flex-col items-center justify-center">
             <Loading />
@@ -137,36 +137,38 @@ export default function SuperSqlClient() {
         )}
 
         {!loading && dbResponse && (
-          <table className="min-w-full table-auto border-collapse border-r border-b min-h-screen overflow-auto border-red-500">
-            <thead>
-              <tr>
-                {Object.keys(rows[0]).map((key, colIndex) => (
-                  <th
-                    key={colIndex}
-                    title={key}
-                    className="border border-gray-300 px-4 py-2 text-left bg-gray-200"
-                  >
-                    {key}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row: any, rowIndex: number) => (
-                <tr key={rowIndex}>
-                  {Object.values(row).map((col: any, colIndex) => (
-                    <td
-                      title={col}
+          <div className="h-[100vh] overflow-auto">
+            <table className="table-auto border-collapse border-r border-b">
+              <thead>
+                <tr>
+                  {Object.keys(rows[0]).map((key, colIndex) => (
+                    <th
                       key={colIndex}
-                      className="border border-gray-300 px-4 py-2"
+                      className="border border-gray-300 px-4 py-2 text-left bg-gray-200 sticky top-0"
                     >
-                      {col}
-                    </td>
+                      {key}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map((row: any, rowIndex: number) => (
+                  <tr key={rowIndex}>
+                    {Object.values(row).map((col: any, colIndex) => (
+                      <td
+                        key={colIndex}
+                        title={col}
+                        onDoubleClick={() => navigator.clipboard.writeText(col)}
+                        className="border border-gray-300 p-2 w-48 max-w-48 overflow-hidden truncate"
+                      >
+                        {col}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

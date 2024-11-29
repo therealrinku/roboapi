@@ -16,26 +16,9 @@ textarea {
   resize: none;
 }
 
-@media not all and (pointer: coarse) {
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(152 151 149);
-  }
-
-  *::-webkit-scrollbar {
-    width: 0;
-  }
-
-  *::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background-color: rgb(152 151 149);
-    border: 3px solid rgb(152 151 149);
-  }
+::-webkit-scrollbar{
+  display: none;
 }
-
 /* loading animation */
 /* credit:https://loading.io/css/ */
 
