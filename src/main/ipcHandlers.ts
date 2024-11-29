@@ -105,7 +105,6 @@ export function registerSuperSqlClientIpcHandlers(
       await pgPool.end();
       event.reply('disconnect-from-db', { success: true });
     } catch (err) {
-      console.log(err);
       event.reply('disconnect-from-db', { error: true });
     }
   });
@@ -113,10 +112,26 @@ export function registerSuperSqlClientIpcHandlers(
   ipcMain.on('send-db-query', async (event, args) => {
     try {
       const resp = await pgPool.query(`${args.query}`);
-      event.reply('send-db-query', { success: true, response: JSON.stringify(resp)});
+      event.reply('send-db-query', {
+        success: true,
+        response: JSON.stringify(resp),
+      });
     } catch (err) {
-      console.log(err);
       event.reply('send-db-query', { error: true });
+    }
+  });
+
+  ipcMain.on('get-db-tables', async (event) => {
+    try {
+      const resp = await pgPool.query(
+        `SELECT table_name FROM information_schema.tables WHERE table_schema='public'`,
+      );
+      event.reply('get-db-tables', {
+        success: true,
+        response: JSON.stringify(resp),
+      });
+    } catch (err) {
+      event.reply('get-db-tables', { error: true });
     }
   });
 }

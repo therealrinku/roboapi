@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { FiClipboard, FiPlay, FiPower, FiSend } from 'react-icons/fi';
+import { FiClipboard, FiPlay, FiPower, FiSend, FiTable } from 'react-icons/fi';
 import Loading from '../components/Loading';
 import useSuperApp from '../hooks/useSuperApp';
 
@@ -9,9 +9,27 @@ export default function SuperSqlClient() {
   const caInputRef = useRef<HTMLInputElement>(null);
   const { quitApp } = useSuperApp();
 
+  const [activeTab, setActiveTab] = useState<'Tables' | 'Query'>('Tables');
+
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingTables, setLoadingTables] = useState<boolean>(false);
   const [connectedDb, setConnectedDb] = useState(null);
   const [dbResponse, setDbResponse] = useState(null);
+  const [dbTables, setDbTables] = useState([]);
+
+  function fetchTables() {
+    setLoadingTables(true);
+    window.electron.ipcRenderer.sendMessage('get-db-tables');
+
+    window.electron.ipcRenderer.once('get-db-tables', (resp) => {
+      if (resp.error) {
+        //fail silently????
+      } else {
+        setDbTables(JSON.parse(resp.response).rows);
+      }
+      setLoadingTables(false);
+    });
+  }
 
   function connect() {
     setLoading(true);
@@ -25,6 +43,7 @@ export default function SuperSqlClient() {
         alert('Something went wrong while connecting to the db');
       } else {
         setConnectedDb(inputRef.current?.value);
+        fetchTables();
       }
       setLoading(false);
     });
@@ -68,9 +87,9 @@ export default function SuperSqlClient() {
             className="flex items-center gap-2 font-bold"
             onClick={quitApp}
           >
-            <FiPower size={15} /> Quit SQL Client
+            <FiPower size={15} />
           </button>
-          {connectedDb && (
+          {connectedDb && activeTab === 'Query' && (
             <button
               disabled={loading}
               className="w-[35%] font-bold flex items-center gap-2 ml-auto"
@@ -103,30 +122,57 @@ export default function SuperSqlClient() {
 
         {connectedDb && (
           <div className="mt-5 flex flex-col gap-2">
-            <p className="font-bold">Quick Query Actions</p>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-5">
               <button
-                onClick={() =>
-                  queryRef.current
-                    ? (queryRef.current.value =
-                        "SELECT table_name FROM information_schema.tables WHERE table_schema='public'")
-                    : () => {}
-                }
+                className={`${activeTab === 'Tables' && 'font-bold'}`}
+                onClick={() => setActiveTab('Tables')}
               >
-                Fetch all tables
+                Tables
               </button>
               <button
-                onClick={() =>
-                  queryRef.current ? (queryRef.current.value = '') : () => {}
-                }
+                className={`${activeTab === 'Query' && 'font-bold'}`}
+                onClick={() => setActiveTab('Query')}
               >
-                Clear Query
+                Query
               </button>
             </div>
-            <textarea
-              ref={queryRef}
-              className="bg-gray-100 w-full h-[60vh] p-2 outline-none rounded"
-            />
+
+            {activeTab === 'Tables' && (
+              <div className="flex flex-col gap-2 items-start">
+                {dbTables.map((row) => {
+                  return (
+                    <button
+                      className="py-2 w-full bg-gray-100 rounded flex items-center gap-2 outline-none pl-2"
+                      key={row}
+                    >
+                      <FiTable />
+                      {row.table_name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {activeTab === 'Query' && (
+              <div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() =>
+                      queryRef.current
+                        ? (queryRef.current.value = '')
+                        : () => {}
+                    }
+                  >
+                    Clear Query
+                  </button>
+                </div>
+                <textarea
+                  placeholder="Enter SQL Query"
+                  ref={queryRef}
+                  className="bg-gray-100 w-full h-[65vh] p-2 outline-none rounded mt-2"
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
