@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { FiClipboard, FiPower } from 'react-icons/fi';
+import { FiClipboard, FiPlay, FiPower, FiSend } from 'react-icons/fi';
 import Loading from '../components/Loading';
 import useSuperApp from '../hooks/useSuperApp';
 
@@ -63,13 +63,22 @@ export default function SuperSqlClient() {
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
       <div className="w-[45%] px-5 gap-3 mt-5">
-        <div className="absolute bottom-0 left-0 pl-5 py-2 border-t w-[50%]">
+        <div className="absolute bottom-0 left-0 pl-5 py-2 border-t w-[45%] flex items-center gap-5">
           <button
             className="flex items-center gap-2 font-bold"
             onClick={quitApp}
           >
-            <FiPower size={15} /> Quit
+            <FiPower size={15} /> Quit SQL Client
           </button>
+          {connectedDb && (
+            <button
+              disabled={loading}
+              className="w-[35%] font-bold flex items-center gap-2 ml-auto"
+              onClick={sendQuery}
+            >
+              <FiPlay /> Execute Query
+            </button>
+          )}
         </div>
 
         <div className="flex flex-col gap-2">
@@ -116,15 +125,8 @@ export default function SuperSqlClient() {
             </div>
             <textarea
               ref={queryRef}
-              className="bg-gray-100 w-full h-[55vh] p-2 outline-none rounded"
+              className="bg-gray-100 w-full h-[60vh] p-2 outline-none rounded"
             />
-            <button
-              disabled={loading}
-              className="w-[25%] bg-green-500 rounded p-2 text-white font-bold self-end"
-              onClick={sendQuery}
-            >
-              Query
-            </button>
           </div>
         )}
       </div>
