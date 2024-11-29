@@ -63,10 +63,10 @@ export default function SuperSqlClient() {
     });
   }
 
-  function sendQuery() {
+  function sendQuery(customQuery?: string) {
     setLoading(true);
     window.electron.ipcRenderer.sendMessage('send-db-query', {
-      query: queryRef.current?.value,
+      query: customQuery ? customQuery : queryRef.current?.value,
     });
     window.electron.ipcRenderer.once('send-db-query', (resp) => {
       if (resp.error) {
@@ -143,7 +143,10 @@ export default function SuperSqlClient() {
                   return (
                     <button
                       className="py-2 w-full bg-gray-100 rounded flex items-center gap-2 outline-none pl-2"
-                      key={row}
+                      key={row.table_name}
+                      onClick={() =>
+                        sendQuery(`select * from ${row.table_name}`)
+                      }
                     >
                       <FiTable />
                       {row.table_name}
