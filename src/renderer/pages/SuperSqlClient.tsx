@@ -63,12 +63,9 @@ export default function SuperSqlClient() {
     });
   }
 
-  function sendQuery(customQuery?: string) {
+  function sendQuery(query: string) {
     setLoading(true);
-    const q = customQuery ? customQuery : queryRef.current?.value;
-    window.electron.ipcRenderer.sendMessage('send-db-query', {
-      query: q,
-    });
+    window.electron.ipcRenderer.sendMessage('send-db-query', { query });
     window.electron.ipcRenderer.once('send-db-query', (resp) => {
       if (resp.error) {
         alert(resp.message);
@@ -103,7 +100,7 @@ export default function SuperSqlClient() {
               <button
                 disabled={loading}
                 className="font-bold flex items-center gap-2"
-                onClick={sendQuery}
+                onClick={() => sendQuery(queryRef.current?.value)}
               >
                 <FiPlay /> Execute Query
               </button>
