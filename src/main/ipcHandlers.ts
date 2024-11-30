@@ -95,8 +95,8 @@ export function registerSuperSqlClientIpcHandlers(
       });
       await pgPool.query('SELECT NOW()');
       event.reply('connect-to-db', { success: true });
-    } catch (err) {
-      event.reply('connect-to-db', { error: true });
+    } catch (err: any) {
+      event.reply('connect-to-db', { error: true, message: err.message });
     }
   });
 
@@ -104,8 +104,8 @@ export function registerSuperSqlClientIpcHandlers(
     try {
       await pgPool.end();
       event.reply('disconnect-from-db', { success: true });
-    } catch (err) {
-      event.reply('disconnect-from-db', { error: true });
+    } catch (err: any) {
+      event.reply('disconnect-from-db', { error: true, message: err.message });
     }
   });
 
@@ -116,8 +116,8 @@ export function registerSuperSqlClientIpcHandlers(
         success: true,
         response: JSON.stringify(resp),
       });
-    } catch (err) {
-      event.reply('send-db-query', { error: true });
+    } catch (err: any) {
+      event.reply('send-db-query', { error: true, message: err.message });
     }
   });
 
@@ -130,8 +130,8 @@ export function registerSuperSqlClientIpcHandlers(
         success: true,
         response: JSON.stringify(resp),
       });
-    } catch (err) {
-      event.reply('get-db-tables', { error: true });
+    } catch (err: any) {
+      event.reply('get-db-tables', { error: true, message: err.message });
     }
   });
 }
