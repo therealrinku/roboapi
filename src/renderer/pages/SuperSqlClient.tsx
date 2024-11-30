@@ -91,13 +91,23 @@ export default function SuperSqlClient() {
             <FiPower size={15} />
           </button>
           {connectedDb && activeTab === 'Query' && (
-            <button
-              disabled={loading}
-              className="w-[35%] font-bold flex items-center gap-2 ml-auto"
-              onClick={sendQuery}
-            >
-              <FiPlay /> Execute Query
-            </button>
+            <div className="flex items-center gap-5 ml-auto pr-5">
+              <button
+                className="font-bold"
+                onClick={() =>
+                  queryRef.current ? (queryRef.current.value = '') : () => {}
+                }
+              >
+                Clear Query
+              </button>
+              <button
+                disabled={loading}
+                className="font-bold flex items-center gap-2"
+                onClick={sendQuery}
+              >
+                <FiPlay /> Execute Query
+              </button>
+            </div>
           )}
         </div>
 
@@ -162,24 +172,11 @@ export default function SuperSqlClient() {
             )}
 
             {activeTab === 'Query' && (
-              <div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() =>
-                      queryRef.current
-                        ? (queryRef.current.value = '')
-                        : () => {}
-                    }
-                  >
-                    Clear Query
-                  </button>
-                </div>
-                <textarea
-                  placeholder="Enter SQL Query"
-                  ref={queryRef}
-                  className="bg-gray-100 w-full h-[65vh] p-2 outline-none rounded mt-2"
-                />
-              </div>
+              <textarea
+                placeholder="Enter SQL Query"
+                ref={queryRef}
+                className="bg-gray-100 w-full h-[58vh] p-2 outline-none rounded mt-2"
+              />
             )}
           </div>
         )}

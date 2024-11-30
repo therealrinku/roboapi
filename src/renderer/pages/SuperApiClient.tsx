@@ -159,7 +159,7 @@ export default function SuperApiClient() {
             className="flex items-center gap-2 font-bold"
             onClick={quitApp}
           >
-            <FiPower size={15} /> Quit
+            <FiPower size={15} />
           </button>
         </div>
 
