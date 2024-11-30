@@ -187,37 +187,46 @@ export default function SuperSqlClient() {
         )}
 
         {!loading && dbResponse && (
-          <div className="h-[100vh] overflow-auto">
-            <table className="table-auto border-collapse border-r border-b">
-              <thead>
-                <tr>
-                  {Object.keys(rows[0]).map((key, colIndex) => (
-                    <th
-                      key={colIndex}
-                      className="border border-gray-300 px-4 py-2 text-left bg-gray-200 sticky top-0"
-                    >
-                      {key}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row: any, rowIndex: number) => (
-                  <tr key={rowIndex}>
-                    {Object.values(row).map((col: any, colIndex) => (
-                      <td
+          <div>
+            <div className="h-[100vh] overflow-auto pb-12">
+              <table className="table-auto border-collapse border-r border-b">
+                <thead>
+                  <tr>
+                    {Object.keys(rows[0]).map((key, colIndex) => (
+                      <th
                         key={colIndex}
-                        title={col}
-                        onDoubleClick={() => navigator.clipboard.writeText(col)}
-                        className="border border-gray-300 p-2 w-48 max-w-48 overflow-hidden truncate"
+                        className="border border-gray-300 px-4 py-2 text-left bg-gray-200 sticky top-0"
                       >
-                        {col}
-                      </td>
+                        {key}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {rows.map((row: any, rowIndex: number) => (
+                    <tr key={rowIndex}>
+                      {Object.values(row).map((col: any, colIndex) => (
+                        <td
+                          key={colIndex}
+                          title={col}
+                          onDoubleClick={() =>
+                            navigator.clipboard.writeText(col)
+                          }
+                          className="border border-gray-300 p-2 w-48 max-w-48 overflow-hidden truncate"
+                        >
+                          {col}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="absolute bottom-0 right-0 pl-5 py-2 border-t w-[55%] flex items-center gap-5 bg-white border-l">
+              <span>
+                <b>{rows.length}</b> rows
+              </span>
+            </div>
           </div>
         )}
       </div>
