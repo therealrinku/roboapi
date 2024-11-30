@@ -1,4 +1,5 @@
 import { ipcMain } from 'electron';
+import { readFileSync } from 'fs';
 import pg from 'pg';
 
 export function registerSuperApiClientIpcHandlers(
@@ -90,9 +91,16 @@ export function registerSuperSqlClientIpcHandlers(
   let pgPool: pg.Pool;
   ipcMain.on('connect-to-db', async (event, args) => {
     try {
-      pgPool = new pg.Pool({
+      const connectionObj: pg.PoolConfig = {
         connectionString: args.connectionUri,
-      });
+      };
+      if (args.caFilePath) {
+        connectionObj.ssl = {
+          rejectUnauthorized: true,
+          ca: readFileSync(args.caFilePath, 'utf8'),
+        };
+      }
+      pgPool = new pg.Pool(connectionObj);
       await pgPool.query('SELECT NOW()');
       event.reply('connect-to-db', { success: true });
     } catch (err: any) {

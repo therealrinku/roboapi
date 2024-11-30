@@ -23,7 +23,7 @@ export default function SuperSqlClient() {
 
     window.electron.ipcRenderer.once('get-db-tables', (resp) => {
       if (resp.error) {
-        //fail silently????
+        alert(resp.message);
       } else {
         setDbTables(JSON.parse(resp.response).rows);
       }
@@ -35,12 +35,12 @@ export default function SuperSqlClient() {
     setLoading(true);
     window.electron.ipcRenderer.sendMessage('connect-to-db', {
       connectionUri: inputRef.current?.value,
-      ca: caInputRef?.current?.value,
+      caFilePath: caInputRef.current?.files?.[0]?.path,
     });
 
     window.electron.ipcRenderer.once('connect-to-db', (resp) => {
       if (resp.error) {
-        alert('Something went wrong while connecting to the db');
+        alert(resp.message);
       } else {
         setConnectedDb(inputRef.current?.value);
         fetchTables();
@@ -54,7 +54,7 @@ export default function SuperSqlClient() {
     window.electron.ipcRenderer.sendMessage('disconnect-from-db');
     window.electron.ipcRenderer.once('disconnect-from-db', (resp) => {
       if (resp.error) {
-        alert('Something went wrong while disconnecting from the db');
+        alert(resp.message);
       } else {
         setConnectedDb(null);
         setDbResponse(null);
@@ -65,12 +65,13 @@ export default function SuperSqlClient() {
 
   function sendQuery(customQuery?: string) {
     setLoading(true);
+    const q = customQuery ? customQuery : queryRef.current?.value;
     window.electron.ipcRenderer.sendMessage('send-db-query', {
-      query: customQuery ? customQuery : queryRef.current?.value,
+      query: q,
     });
     window.electron.ipcRenderer.once('send-db-query', (resp) => {
       if (resp.error) {
-        alert('Something went wrong while querying the db');
+        alert(resp.message);
       } else {
         setDbResponse(resp.response);
       }
@@ -101,15 +102,19 @@ export default function SuperSqlClient() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <button className="mt-2 flex items-center gap-2 font-bold">
-            Postgres
-          </button>
+          <span className="font-bold">PostgresSQL connection string</span>
           <input
             ref={inputRef}
             type="text"
             disabled={loading || connectedDb ? true : false}
             className="bg-gray-100 rounded p-2 w-full outline-none"
-            placeholder="Connection Url"
+          />
+          <span className="font-bold">CA cert file (optional)</span>
+          <input
+            ref={caInputRef}
+            type="file"
+            disabled={loading || connectedDb ? true : false}
+            className="bg-gray-100 rounded p-2 w-full outline-none"
           />
           <button
             disabled={loading}
