@@ -241,9 +241,9 @@ export default function SuperSqlClient() {
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((row: any, rowIndex: number) => (
+                  {rows.map((row, rowIndex: number) => (
                     <tr key={rowIndex}>
-                      {Object.values(row).map((col: any, colIndex) => (
+                      {Object.values(row).map((col, colIndex) => (
                         <td
                           key={colIndex}
                           title={col}
