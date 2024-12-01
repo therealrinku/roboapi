@@ -1,5 +1,11 @@
 import { useRef, useState } from 'react';
-import { FiPlay, FiPower, FiRefreshCcw, FiTable } from 'react-icons/fi';
+import {
+  FiClipboard,
+  FiPlay,
+  FiPower,
+  FiRefreshCcw,
+  FiTable,
+} from 'react-icons/fi';
 import Loading from '../components/Loading';
 import useSuperApp from '../hooks/useSuperApp';
 import {
@@ -25,6 +31,9 @@ export default function SuperSqlClient() {
     ISuperSqlDbQueryResponse | null | undefined
   >(null);
   const [dbTables, setDbTables] = useState<ISuperSqlDbTables>([]);
+  const [onHoverTableValue, setOnHoverTableValue] = useState<string | null>(
+    null,
+  );
 
   function fetchTables() {
     setLoadingTables(true);
@@ -247,9 +256,7 @@ export default function SuperSqlClient() {
                         <td
                           key={colIndex}
                           title={col}
-                          onDoubleClick={() =>
-                            navigator.clipboard.writeText(col)
-                          }
+                          onClick={() => setOnHoverTableValue(col)}
                           className="border border-gray-300 p-2 w-48 max-w-48 overflow-hidden truncate"
                         >
                           {col}
@@ -264,6 +271,21 @@ export default function SuperSqlClient() {
               <span>
                 <b>{rows.length}</b> rows
               </span>
+              {onHoverTableValue && (
+                <div className="flex items-center gap-3 w-[82%]">
+                  <p className="max-w-full overflow-x-auto whitespace-nowrap truncate">
+                    {onHoverTableValue}
+                  </p>
+                  <button
+                    className="ml-auto"
+                    onClick={() =>
+                      navigator.clipboard.writeText(onHoverTableValue)
+                    }
+                  >
+                    <FiClipboard size={14} />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
