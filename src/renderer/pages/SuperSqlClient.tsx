@@ -101,6 +101,7 @@ export default function SuperSqlClient() {
           response.response,
         ) as ISuperSqlDbQueryResponse;
         setDbResponse(dbResp);
+        setOnHoverTableValue(null);
       }
       setLoading(false);
     });
