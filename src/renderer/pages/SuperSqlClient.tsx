@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { FiPlay, FiPower, FiTable } from 'react-icons/fi';
+import { FiPlay, FiPower, FiRefreshCcw, FiTable } from 'react-icons/fi';
 import Loading from '../components/Loading';
 import useSuperApp from '../hooks/useSuperApp';
 import {
@@ -108,6 +108,17 @@ export default function SuperSqlClient() {
           >
             <FiPower size={15} />
           </button>
+          {connectedDb && activeTab === 'Tables' && !loadingTables && (
+            <div className="flex items-center gap-5 ml-auto pr-5">
+              <button
+                className="font-bold flex items-center gap-2"
+                onClick={fetchTables}
+              >
+                <FiRefreshCcw size={15} />
+                Reload Tables
+              </button>
+            </div>
+          )}
           {connectedDb && activeTab === 'Query' && (
             <div className="flex items-center gap-5 ml-auto pr-5">
               <button
@@ -172,20 +183,26 @@ export default function SuperSqlClient() {
 
             {activeTab === 'Tables' && (
               <div className="flex flex-col gap-2 items-start">
-                {dbTables.map((row) => {
-                  return (
-                    <button
-                      className="py-2 w-full bg-gray-100 rounded flex items-center gap-2 outline-none pl-2"
-                      key={row.table_name}
-                      onClick={() =>
-                        sendQuery(`select * from ${row.table_name}`)
-                      }
-                    >
-                      <FiTable />
-                      {row.table_name}
-                    </button>
-                  );
-                })}
+                {loadingTables && (
+                  <p className="font-bold text-center mt-2">
+                    Loading tables......
+                  </p>
+                )}
+                {!loadingTables &&
+                  dbTables.map((row) => {
+                    return (
+                      <button
+                        className="py-2 w-full bg-gray-100 rounded flex items-center gap-2 outline-none pl-2"
+                        key={row.table_name}
+                        onClick={() =>
+                          sendQuery(`select * from ${row.table_name}`)
+                        }
+                      >
+                        <FiTable />
+                        {row.table_name}
+                      </button>
+                    );
+                  })}
               </div>
             )}
 
