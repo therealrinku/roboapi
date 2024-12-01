@@ -109,8 +109,8 @@ export default function SuperSqlClient() {
   const rows = dbResponse ? dbResponse.rows : [];
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
-      <div className="w-[45%] px-5 gap-3 mt-5">
-        <div className="absolute bottom-0 left-0 pl-5 py-2 border-t w-[45%] flex items-center gap-5">
+      <div className="w-[25%] px-5 gap-3 mt-5">
+        <div className="absolute bottom-0 left-0 pl-5 py-2 border-t w-[25%] flex items-center gap-5">
           <button
             className="flex items-center gap-2 font-bold"
             onClick={quitApp}
@@ -143,13 +143,13 @@ export default function SuperSqlClient() {
                 className="font-bold flex items-center gap-2"
                 onClick={() => sendQuery(queryRef.current?.value as string)}
               >
-                <FiPlay /> Execute Query
+                <FiPlay />
               </button>
             </div>
           )}
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           <span className="font-bold">PostgresSQL connection string</span>
           <input
             ref={inputRef}
@@ -166,7 +166,7 @@ export default function SuperSqlClient() {
           />
           <button
             disabled={loading}
-            className={`w-[25%] ${connectedDb ? 'bg-red-500' : 'bg-green-500'} rounded p-2 text-white font-bold`}
+            className={`w-full ${connectedDb ? 'bg-red-500' : 'bg-green-500'} rounded p-2 text-white font-bold`}
             onClick={connectedDb ? disconnect : connect}
           >
             {connectedDb ? 'Disconnect' : 'Connect'}
@@ -226,7 +226,7 @@ export default function SuperSqlClient() {
         )}
       </div>
 
-      <div className="w-[55%] border-l min-h-screen">
+      <div className="w-[75%] border-l min-h-screen">
         {loading && (
           <div className="h-screen w-full flex flex-col items-center justify-center">
             <Loading />
@@ -267,13 +267,13 @@ export default function SuperSqlClient() {
                 </tbody>
               </table>
             </div>
-            <div className="absolute bottom-0 right-0 pl-5 py-2 border-t w-[55%] flex items-center gap-5 bg-white border-l">
+            <div className="absolute bottom-0 right-0 pl-5 py-2 border-t w-[75%] flex items-center gap-5 bg-white border-l">
               <span>
                 <b>{rows.length}</b> rows
               </span>
               {onHoverTableValue && (
-                <div className="flex items-center gap-3 w-[82%]">
-                  <p className="max-w-full overflow-x-auto whitespace-nowrap truncate">
+                <div className="flex items-center gap-3 ml-auto pr-5 w-[80%]">
+                  <p className="max-w-[70%] overflow-x-auto whitespace-nowrap truncate">
                     {onHoverTableValue}
                   </p>
                   <button
