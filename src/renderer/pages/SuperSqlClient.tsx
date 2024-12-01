@@ -1,7 +1,14 @@
 import { useRef, useState } from 'react';
-import { FiClipboard, FiPlay, FiPower, FiSend, FiTable } from 'react-icons/fi';
+import { FiPlay, FiPower, FiTable } from 'react-icons/fi';
 import Loading from '../components/Loading';
 import useSuperApp from '../hooks/useSuperApp';
+import {
+  ISuperSqlConnectionResponse,
+  ISuperSqlDbQueryResponse,
+  ISuperSqlDbTables,
+  ISuperSqlGetTablesQueryResponse,
+  ISuperSqlSendQueryResponse,
+} from '../global';
 
 export default function SuperSqlClient() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -13,19 +20,25 @@ export default function SuperSqlClient() {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingTables, setLoadingTables] = useState<boolean>(false);
-  const [connectedDb, setConnectedDb] = useState(null);
-  const [dbResponse, setDbResponse] = useState(null);
-  const [dbTables, setDbTables] = useState([]);
+  const [connectedDb, setConnectedDb] = useState<string | null>(null);
+  const [dbResponse, setDbResponse] = useState<
+    ISuperSqlDbQueryResponse | null | undefined
+  >(null);
+  const [dbTables, setDbTables] = useState<ISuperSqlDbTables>([]);
 
   function fetchTables() {
     setLoadingTables(true);
     window.electron.ipcRenderer.sendMessage('get-db-tables');
 
     window.electron.ipcRenderer.once('get-db-tables', (resp) => {
-      if (resp.error) {
-        alert(resp.message);
-      } else {
-        setDbTables(JSON.parse(resp.response).rows);
+      const response = resp as ISuperSqlGetTablesQueryResponse;
+      if (response.error) {
+        alert(response.message);
+      } else if (response.response) {
+        const table = JSON.parse(response.response) as {
+          rows: [{ table_name: string }];
+        };
+        setDbTables(table.rows);
       }
       setLoadingTables(false);
     });
@@ -39,10 +52,11 @@ export default function SuperSqlClient() {
     });
 
     window.electron.ipcRenderer.once('connect-to-db', (resp) => {
-      if (resp.error) {
-        alert(resp.message);
+      const response = resp as ISuperSqlConnectionResponse;
+      if ('error' in response) {
+        alert(response.message);
       } else {
-        setConnectedDb(inputRef.current?.value);
+        setConnectedDb(inputRef.current?.value as string);
         fetchTables();
       }
       setLoading(false);
@@ -51,10 +65,12 @@ export default function SuperSqlClient() {
 
   function disconnect() {
     setLoading(true);
+
     window.electron.ipcRenderer.sendMessage('disconnect-from-db');
     window.electron.ipcRenderer.once('disconnect-from-db', (resp) => {
-      if (resp.error) {
-        alert(resp.message);
+      const response = resp as ISuperSqlConnectionResponse;
+      if ('error' in response) {
+        alert(response.message);
       } else {
         setConnectedDb(null);
         setDbResponse(null);
@@ -65,18 +81,23 @@ export default function SuperSqlClient() {
 
   function sendQuery(query: string) {
     setLoading(true);
+
     window.electron.ipcRenderer.sendMessage('send-db-query', { query });
     window.electron.ipcRenderer.once('send-db-query', (resp) => {
-      if (resp.error) {
-        alert(resp.message);
-      } else {
-        setDbResponse(resp.response);
+      const response = resp as ISuperSqlSendQueryResponse;
+      if (response.error) {
+        alert(response.message);
+      } else if (response.response) {
+        const dbResp = JSON.parse(
+          response.response,
+        ) as ISuperSqlDbQueryResponse;
+        setDbResponse(dbResp);
       }
       setLoading(false);
     });
   }
 
-  const rows = dbResponse ? JSON.parse(dbResponse).rows : [];
+  const rows = dbResponse ? dbResponse.rows : [];
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
       <div className="w-[45%] px-5 gap-3 mt-5">
@@ -100,7 +121,7 @@ export default function SuperSqlClient() {
               <button
                 disabled={loading}
                 className="font-bold flex items-center gap-2"
-                onClick={() => sendQuery(queryRef.current?.value)}
+                onClick={() => sendQuery(queryRef.current?.value as string)}
               >
                 <FiPlay /> Execute Query
               </button>

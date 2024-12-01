@@ -18,3 +18,53 @@ export type ISuperApiResponse = {
   responseHeaders: Record<string, string>;
   responseCookies: Record<string, string>;
 };
+
+type ISuperSqlConnectionSuccessResponse = {
+  success: boolean;
+  message: string;
+};
+
+type ISuperSqlConnectionErrorResponse = {
+  error: boolean;
+  message: string;
+};
+
+type ISuperSqlConnectionResponse =
+  | ISuperSqlConnectionSuccessResponse
+  | ISuperSqlConnectionErrorResponse;
+
+type ISuperSqlDbTables = Array<{ table_name: string }>;
+
+type ISuperSqlDbQueryResponse = {
+  rows: Record<string, string>[];
+  rowCount: number;
+  command: string;
+  fields: Array<{
+    name: string;
+    tableID: number;
+    columnID: number;
+    dataTypeID: number;
+    dataTypeSize: number;
+    dataTypeModifier: number;
+    format: string;
+  }>;
+  oid?: number;
+};
+
+export type ISuperSqlSendQueryResponse = {
+  error?: boolean;
+  success?: boolean;
+  message?: string;
+  response?: string;
+  // response?: ISuperSqlDbQueryResponse;
+};
+
+export type ISuperSqlGetTablesQueryResponse = {
+  error?: boolean;
+  success?: boolean;
+  message?: string;
+  // response?: {
+  //   rows: { table_name: string }[];
+  // };
+  response?: string;
+};
