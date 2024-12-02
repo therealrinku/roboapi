@@ -195,7 +195,7 @@ export default function SuperSqlClient() {
               <div className="flex flex-col gap-2 items-start">
                 {loadingTables && (
                   <p className="font-bold text-center mt-2">
-                    Loading tables......
+                    Loading tables...
                   </p>
                 )}
                 {!loadingTables &&
