@@ -273,12 +273,10 @@ export default function SuperSqlClient() {
                 <b>{rows.length}</b> rows
               </span>
               {onHoverTableValue && (
-                <div className="flex items-center gap-3 ml-auto pr-5 w-[80%]">
-                  <p className="max-w-[70%] overflow-x-auto whitespace-nowrap truncate">
-                    {onHoverTableValue}
-                  </p>
+                <div className="flex items-center gap-3 pr-5 w-[85%]">
+                  <span className="truncate">{onHoverTableValue}</span>
                   <button
-                    className="ml-auto"
+                    className="absolute right-5"
                     onClick={() =>
                       navigator.clipboard.writeText(onHoverTableValue)
                     }
