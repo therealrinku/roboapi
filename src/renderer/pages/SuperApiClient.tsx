@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import {
   FiBookmark,
   FiClipboard,
@@ -48,7 +48,8 @@ export default function SuperApiClient() {
   ]);
   const [body, setBody] = useState<any>('');
 
-  async function sendReq() {
+  async function sendReq(event?: FormEvent<HTMLFormElement>) {
+    event?.preventDefault();
     setLoading(true);
 
     const activeHeaders = headers.filter(
@@ -169,7 +170,10 @@ export default function SuperApiClient() {
               <FiBookmark size={15} /> Unsaved
             </p>
           </div>
-          <div className="flex items-center mt-2 pr-3 bg-gray-100 rounded">
+          <form
+            onSubmit={sendReq}
+            className="flex items-center mt-2 pr-3 bg-gray-100 rounded"
+          >
             <select
               className="bg-inherit px-1 outline-none w-24 font-bold"
               value={reqType}
@@ -190,10 +194,10 @@ export default function SuperApiClient() {
               placeholder="Request Url"
               className="w-full bg-inherit outline-none p-2 rounded"
             />
-            <button onClick={sendReq}>
+            <button onClick={()=>sendReq()}>
               <FiSend />
             </button>
-          </div>
+          </form>
         </div>
 
         <div className="flex items-center gap-5 mt-2">
