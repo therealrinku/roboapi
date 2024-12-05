@@ -1,9 +1,10 @@
 import { useRef, useState } from 'react';
 import {
   FiClipboard,
+  FiDatabase,
   FiPlay,
   FiPower,
-  FiRefreshCcw,
+  FiRotateCw,
   FiTable,
 } from 'react-icons/fi';
 import Loading from '../components/Loading';
@@ -15,11 +16,10 @@ import {
   ISuperSqlGetTablesQueryResponse,
   ISuperSqlSendQueryResponse,
 } from '../global';
+import SqlClientConnectionForm from '../components/SqlClientConnectionForm';
 
 export default function SuperSqlClient() {
-  const inputRef = useRef<HTMLInputElement>(null);
   const queryRef = useRef<HTMLTextAreaElement>(null);
-  const caInputRef = useRef<HTMLInputElement>(null);
   const { quitApp } = useSuperApp();
 
   const [activeTab, setActiveTab] = useState<'Tables' | 'Query'>('Tables');
@@ -50,25 +50,6 @@ export default function SuperSqlClient() {
         setDbTables(table.rows);
       }
       setLoadingTables(false);
-    });
-  }
-
-  function connect() {
-    setLoading(true);
-    window.electron.ipcRenderer.sendMessage('connect-to-db', {
-      connectionUri: inputRef.current?.value,
-      caFilePath: caInputRef.current?.files?.[0]?.path,
-    });
-
-    window.electron.ipcRenderer.once('connect-to-db', (resp) => {
-      const response = resp as ISuperSqlConnectionResponse;
-      if ('error' in response) {
-        alert(response.message);
-      } else {
-        setConnectedDb(inputRef.current?.value as string);
-        fetchTables();
-      }
-      setLoading(false);
     });
   }
 
@@ -108,6 +89,17 @@ export default function SuperSqlClient() {
   }
 
   const rows = dbResponse ? dbResponse.rows : [];
+
+  if (!connectedDb) {
+    return (
+      <div className="flex flex-col h-screen text-xs w-[50%] mx-auto">
+        <SqlClientConnectionForm
+          onConnectionSuccess={(dbName) => setConnectedDb(dbName)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
       <div className="w-[25%] px-5 gap-3 mt-5">
@@ -116,19 +108,11 @@ export default function SuperSqlClient() {
             className="flex items-center gap-2 font-bold"
             onClick={quitApp}
           >
+            <FiDatabase size={15} />
+            {connectedDb}
             <FiPower size={15} />
           </button>
-          {connectedDb && activeTab === 'Tables' && !loadingTables && (
-            <div className="flex items-center gap-5 ml-auto pr-5">
-              <button
-                className="font-bold flex items-center gap-2"
-                onClick={fetchTables}
-              >
-                <FiRefreshCcw size={15} />
-                Reload Tables
-              </button>
-            </div>
-          )}
+
           {connectedDb && activeTab === 'Query' && (
             <div className="flex items-center gap-5 ml-auto pr-5">
               <button
@@ -150,38 +134,21 @@ export default function SuperSqlClient() {
           )}
         </div>
 
-        <div className="flex flex-col gap-3">
-          <span className="font-bold">PostgresSQL connection string</span>
-          <input
-            ref={inputRef}
-            type="text"
-            disabled={loading || connectedDb ? true : false}
-            className="bg-gray-100 rounded p-2 w-full outline-none"
-          />
-          <span className="font-bold">CA cert file (optional)</span>
-          <input
-            ref={caInputRef}
-            type="file"
-            disabled={loading || connectedDb ? true : false}
-            className="bg-gray-100 rounded p-2 w-full outline-none"
-          />
-          <button
-            disabled={loading}
-            className={`w-full ${connectedDb ? 'bg-red-500' : 'bg-green-500'} rounded p-2 text-white font-bold`}
-            onClick={connectedDb ? disconnect : connect}
-          >
-            {connectedDb ? 'Disconnect' : 'Connect'}
-          </button>
-        </div>
-
         {connectedDb && (
-          <div className="mt-5 flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
             <div className="flex items-center gap-5">
               <button
-                className={`${activeTab === 'Tables' && 'font-bold'}`}
+                className={`${activeTab === 'Tables' && 'font-bold'} flex items-center gap-2 outline-none`}
                 onClick={() => setActiveTab('Tables')}
               >
                 Tables
+                <button
+                  className="font-bold flex items-center gap-2"
+                  onClick={fetchTables}
+                  disabled={loadingTables}
+                >
+                  <FiRotateCw size={13} />
+                </button>
               </button>
               <button
                 className={`${activeTab === 'Query' && 'font-bold'}`}
@@ -268,6 +235,7 @@ export default function SuperSqlClient() {
                 </tbody>
               </table>
             </div>
+
             <div className="absolute bottom-0 right-0 pl-5 py-2 border-t w-[75%] flex items-center gap-5 bg-white border-l">
               <span>
                 <b>{rows.length}</b> rows
