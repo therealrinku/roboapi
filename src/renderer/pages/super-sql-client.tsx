@@ -7,8 +7,8 @@ import {
   FiRotateCw,
   FiTable,
 } from 'react-icons/fi';
-import Loading from '../components/Loading';
-import useSuperApp from '../hooks/useSuperApp';
+import Loading from '../components/common/Loading';
+import useSuperApp from '../hooks/use-super-app';
 import {
   ISuperSqlConnectionResponse,
   ISuperSqlDbQueryResponse,
@@ -16,7 +16,7 @@ import {
   ISuperSqlGetTablesQueryResponse,
   ISuperSqlSendQueryResponse,
 } from '../global';
-import SqlClientConnectionForm from '../components/SqlClientConnectionForm';
+import ConnectionForm from '../components/supersql/connection-form';
 
 export default function SuperSqlClient() {
   const queryRef = useRef<HTMLTextAreaElement>(null);
@@ -93,7 +93,7 @@ export default function SuperSqlClient() {
   if (!connectedDb) {
     return (
       <div className="flex flex-col h-screen text-xs w-[50%] mx-auto">
-        <SqlClientConnectionForm
+        <ConnectionForm
           onConnectionSuccess={(dbName) => {
             setConnectedDb(dbName);
             fetchTables();

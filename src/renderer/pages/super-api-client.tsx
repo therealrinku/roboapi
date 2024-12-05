@@ -7,8 +7,8 @@ import {
   FiTrash2,
 } from 'react-icons/fi';
 import { GoCheckCircle, GoCheckCircleFill } from 'react-icons/go';
-import Loading from '../components/Loading';
-import useSuperApp from '../hooks/useSuperApp';
+import Loading from '../components/common/Loading';
+import useSuperApp from '../hooks/use-super-app';
 import {
   ISuperApiRequestTypes,
   ISuperApiResponse,
@@ -194,7 +194,7 @@ export default function SuperApiClient() {
               placeholder="Request Url"
               className="w-full bg-inherit outline-none p-2 rounded"
             />
-            <button onClick={()=>sendReq()}>
+            <button onClick={() => sendReq()}>
               <FiSend />
             </button>
           </form>

@@ -1,5 +1,5 @@
 import { FiDatabase, FiTool, FiWind } from 'react-icons/fi';
-import useSuperApp from '../hooks/useSuperApp';
+import useSuperApp from '../hooks/use-super-app';
 
 export default function Landing() {
   const { loadApp } = useSuperApp();

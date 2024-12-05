@@ -3,15 +3,15 @@ import { RootContext } from '../context/root-context';
 import { IApp } from '../global';
 
 export default function useSuperApp() {
-  const { app, setApp } = useContext(RootContext);
+  const { app , setApp} = useContext(RootContext);
 
-  function loadApp(appName: IApp) {
-    setApp(appName);
+  function loadApp(appName:IApp) {
+    setApp(appName)
   }
 
-  function quitApp() {
+  function quitApp(){
     setApp(null);
   }
 
-  return { app, loadApp, quitApp };
+  return { app, loadApp, quitApp};
 }

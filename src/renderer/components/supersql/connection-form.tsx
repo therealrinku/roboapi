@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react';
-import { ISuperSqlConnectionResponse } from '../global';
+import { ISuperSqlConnectionResponse } from '../../global';
 
 interface Props {
   onConnectionSuccess: (dbName: string) => void;
 }
 
-export default function SqlClientConnectionForm({
+export default function ConnectionForm({
   onConnectionSuccess,
 }: Props) {
   const [useConnectionString, setUseConnectionString] = useState(false);
