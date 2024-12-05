@@ -94,7 +94,10 @@ export default function SuperSqlClient() {
     return (
       <div className="flex flex-col h-screen text-xs w-[50%] mx-auto">
         <SqlClientConnectionForm
-          onConnectionSuccess={(dbName) => setConnectedDb(dbName)}
+          onConnectionSuccess={(dbName) => {
+            setConnectedDb(dbName);
+            fetchTables();
+          }}
         />
       </div>
     );
