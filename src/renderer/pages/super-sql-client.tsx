@@ -7,7 +7,7 @@ import {
   FiRotateCw,
   FiTable,
 } from 'react-icons/fi';
-import Loading from '../components/common/Loading';
+import Loading from '../components/common/loading';
 import useSuperApp from '../hooks/use-super-app';
 import {
   ISuperSqlConnectionResponse,

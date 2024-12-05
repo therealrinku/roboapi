@@ -7,7 +7,7 @@ import {
   FiTrash2,
 } from 'react-icons/fi';
 import { GoCheckCircle, GoCheckCircleFill } from 'react-icons/go';
-import Loading from '../components/common/Loading';
+import Loading from '../components/common/loading';
 import useSuperApp from '../hooks/use-super-app';
 import {
   ISuperApiRequestTypes,
