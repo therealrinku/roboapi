@@ -129,7 +129,7 @@ export default function SuperSqlClient() {
               <button
                 disabled={loading}
                 className="font-bold flex items-center gap-2"
-                onClick={() => sendQuery(queryRef.current?.value as string)}
+                onClick={() => sendQuery(String(queryRef.current?.value))}
               >
                 <FiPlay />
               </button>

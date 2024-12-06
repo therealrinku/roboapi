@@ -5,7 +5,7 @@ import Landing from './pages/landing';
 import useSuperApp from './hooks/use-super-app';
 import SuperApiClient from './pages/super-api-client';
 import SuperSqlClient from './pages/super-sql-client';
-import './App.css';
+import './app.css';
 
 export default function App() {
   return (
@@ -29,9 +29,9 @@ function SetupApp() {
     }
 
     // change-theme from menubar
-    window.electron.ipcRenderer.on('toggle-theme', () => {
-      toggleTheme();
-    });
+    // window.electron.ipcRenderer.on('toggle-theme', () => {
+    //   toggleTheme();
+    // });
   }, []);
 
   function toggleTheme() {
