@@ -4,7 +4,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { registerSuperApiClientIpcHandlers, registerSuperSqlClientIpcHandlers } from './ipcHandlers';
+import { registerSuperApiClientIpcHandlers, registerSuperSqlClientIpcHandlers } from './ipc-handlers';
 
 class AppUpdater {
   constructor() {

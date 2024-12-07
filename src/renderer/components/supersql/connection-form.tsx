@@ -5,9 +5,7 @@ interface Props {
   onConnectionSuccess: (dbName: string) => void;
 }
 
-export default function ConnectionForm({
-  onConnectionSuccess,
-}: Props) {
+export default function ConnectionForm({ onConnectionSuccess }: Props) {
   const [useConnectionString, setUseConnectionString] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -61,6 +59,7 @@ export default function ConnectionForm({
           <div className="flex flex-col gap-2">
             <span className="font-bold">Connection String</span>
             <input
+              title="Connection String"
               ref={connectionStringInputRef}
               type="text"
               disabled={isLoading}
@@ -141,6 +140,7 @@ export default function ConnectionForm({
       </div>
 
       <button
+        role="toggleConnectionInput"
         className="underline font-bold"
         onClick={() => setUseConnectionString((prev) => !prev)}
       >
