@@ -10,6 +10,7 @@ import { GoCheckCircle, GoCheckCircleFill } from 'react-icons/go';
 import Loading from '../components/common/loading';
 import useSuperApp from '../hooks/use-super-app';
 import {
+  ISuperApiAuthorizationTypes,
   ISuperApiRequestTypes,
   ISuperApiResponse,
   ISuperApiTabs,
@@ -31,10 +32,13 @@ export default function SuperApiClient() {
 
   const [activeTab, setActiveTab] = useState<ISuperApiTabs>('Headers');
   const [loading, setLoading] = useState<boolean>(false);
+  const [authorizationType, setAuthorizationType] =
+    useState<ISuperApiAuthorizationTypes>('bearer');
   const [bearerToken, setBearerToken] = useState<string | null>('');
   const [isBearerTokenActive, setIsBearerTokenActive] = useState(true);
-  const [authorizationType, setAuthorizationType] =
-    useState<'bearer'>('bearer');
+  const [apiKeyKey, setApiKeyKey] = useState<string>('');
+  const [apiKeyValue, setApiKeyValue] = useState<string>('');
+  const [isApiKeyActive, setIsApiKeyActive] = useState(false);
 
   const [activeResponseTab, setActiveResponseTab] = useState<
     'Response' | 'Headers' | 'Cookies'
@@ -58,6 +62,15 @@ export default function SuperApiClient() {
     const activeParams = params.filter(
       (param) => param.key.trim() && param.isActive,
     );
+    const isApiKeyPresentAndActive =
+      isApiKeyActive && apiKeyKey.trim() && apiKeyValue.trim();
+    if (isApiKeyPresentAndActive) {
+      activeHeaders.push({
+        key: apiKeyKey,
+        value: apiKeyValue,
+        isActive: isApiKeyActive,
+      });
+    }
 
     window.electron.ipcRenderer.sendMessage('send-api-request', {
       reqType: reqType,
@@ -335,12 +348,20 @@ export default function SuperApiClient() {
           )}
           {activeTab === 'Authorization' && (
             <div>
-              <button
-                onClick={() => setAuthorizationType('bearer')}
-                className={`mt-2 flex items-center gap-2 ${authorizationType === 'bearer' ? 'font-bold' : ''}`}
-              >
-                Bearer Token
-              </button>
+              <div className="flex items-center gap-5">
+                <button
+                  onClick={() => setAuthorizationType('bearer')}
+                  className={`mt-2 flex items-center gap-2 ${authorizationType === 'bearer' ? 'font-bold' : ''}`}
+                >
+                  Bearer Token
+                </button>
+                <button
+                  onClick={() => setAuthorizationType('api_key')}
+                  className={`mt-2 flex items-center gap-2 ${authorizationType === 'api_key' ? 'font-bold' : ''}`}
+                >
+                  Api Key (through headers)
+                </button>
+              </div>
               {authorizationType === 'bearer' && (
                 <div className="flex items-center justify-between mt-2">
                   <input
@@ -354,6 +375,34 @@ export default function SuperApiClient() {
                     onClick={() => setIsBearerTokenActive((prev) => !prev)}
                   >
                     {isBearerTokenActive ? (
+                      <GoCheckCircleFill size={16} />
+                    ) : (
+                      <GoCheckCircle size={16} />
+                    )}
+                  </button>
+                  <button onClick={() => setBearerToken(null)}>
+                    <FiTrash2 size={16} color="red" />
+                  </button>
+                </div>
+              )}
+              {authorizationType === 'api_key' && (
+                <div className="flex items-center justify-between mt-2">
+                  <input
+                    value={apiKeyKey ?? ''}
+                    onChange={(e) => setApiKeyKey(e.target.value)}
+                    type="text"
+                    placeholder="Key"
+                    className="w-[43%] border p-2 rounded outline-none bg-gray-100"
+                  />
+                  <input
+                    value={apiKeyValue ?? ''}
+                    onChange={(e) => setApiKeyValue(e.target.value)}
+                    type="text"
+                    placeholder="Value"
+                    className="w-[43%] border p-2 rounded outline-none bg-gray-100"
+                  />
+                  <button onClick={() => setIsApiKeyActive((prev) => !prev)}>
+                    {isApiKeyActive ? (
                       <GoCheckCircleFill size={16} />
                     ) : (
                       <GoCheckCircle size={16} />

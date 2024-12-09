@@ -19,6 +19,10 @@ export type ISuperApiResponse = {
   responseCookies: Record<string, string>;
 };
 
+export type ISuperApiAuthorizationTypes = 'bearer' | 'api_key';
+
+// ---------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------
 type ISuperSqlConnectionSuccessResponse = {
   success: boolean;
   message: string;
