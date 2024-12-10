@@ -66,6 +66,7 @@ export default function SuperSqlClient() {
         setDbResponse(null);
       }
       setLoading(false);
+      quitApp();
     });
   }
 
@@ -106,13 +107,13 @@ export default function SuperSqlClient() {
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
       <div className="w-[25%] px-5 gap-3 mt-5">
-        <div className="absolute bottom-0 left-0 pl-5 py-2 border-t w-[25%] flex items-center gap-5">
+        <div className="absolute bottom-0 left-0 pl-5 py-2 border-t w-[25%] flex items-center gap-2">
+          <FiDatabase size={15} />
+          {connectedDb}
           <button
             className="flex items-center gap-2 font-bold"
-            onClick={quitApp}
+            onClick={disconnect}
           >
-            <FiDatabase size={15} />
-            {connectedDb}
             <FiPower size={15} />
           </button>
 
