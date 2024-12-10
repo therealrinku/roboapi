@@ -1,12 +1,16 @@
 import { useRef, useState } from 'react';
 import { ISuperSqlConnectionResponse } from '../../global';
+import useSuperApp from '../../hooks/use-super-app';
 
 interface Props {
   onConnectionSuccess: (dbName: string) => void;
 }
 
 export default function ConnectionForm({ onConnectionSuccess }: Props) {
-  const [useConnectionString, setUseConnectionString] = useState(false);
+  const { quitApp } = useSuperApp();
+  const [connectWith, setConnectWith] = useState<
+    'connection_string' | 'connection_inputs'
+  >('connection_string');
   const [isLoading, setIsLoading] = useState(false);
 
   const connectionStringInputRef = useRef<HTMLInputElement>(null);
@@ -21,7 +25,7 @@ export default function ConnectionForm({ onConnectionSuccess }: Props) {
     setIsLoading(true);
 
     let connectionUri = null;
-    if (useConnectionString) {
+    if (connectWith === 'connection_string') {
       connectionUri = connectionStringInputRef.current?.value;
     } else {
       connectionUri = `postgres://${userInputRef.current?.value}:${passwordInputRef.current?.value}@${hostInputRef.current?.value}:${portInputRef.current?.value}/${dbNameInputRef.current?.value}`;
@@ -48,13 +52,29 @@ export default function ConnectionForm({ onConnectionSuccess }: Props) {
   return (
     <div className="flex flex-col gap-5 py-12 w-full">
       <div className="flex flex-col gap-2">
+        <span className="font-bold">Connect With</span>
+        <select
+          className="bg-gray-100 rounded p-2 w-full outline-none"
+          value={connectWith}
+          onChange={(e) =>
+            setConnectWith(
+              e.target.value as 'connection_string' | 'connection_inputs',
+            )
+          }
+        >
+          <option value="connection_string">Connection String</option>
+          <option value="connection_inputs">Connection Inputs</option>
+        </select>
+      </div>
+
+      <div className="flex flex-col gap-2">
         <span className="font-bold">Connection</span>
         <select className="bg-gray-100 rounded p-2 w-full outline-none">
           <option>Postgresql</option>
         </select>
       </div>
 
-      {useConnectionString ? (
+      {connectWith === 'connection_string' ? (
         <>
           <div className="flex flex-col gap-2">
             <span className="font-bold">Connection String</span>
@@ -139,21 +159,21 @@ export default function ConnectionForm({ onConnectionSuccess }: Props) {
         />
       </div>
 
-      <button
-        role="toggleConnectionInput"
-        className="underline font-bold"
-        onClick={() => setUseConnectionString((prev) => !prev)}
-      >
-        {useConnectionString ? 'Use connection input' : 'Use connection string'}
-      </button>
-
-      <button
-        disabled={isLoading}
-        className="w-full bg-green-500 rounded p-2 text-white font-bold"
-        onClick={handleConnectDb}
-      >
-        Connect
-      </button>
+      <div className="w-full flex items-center gap-2">
+        <button
+          disabled={isLoading}
+          className="w-full bg-green-500 rounded p-2 text-white font-bold"
+          onClick={handleConnectDb}
+        >
+          Connect
+        </button>
+        <button
+          className="w-full bg-gray-500 rounded p-2 text-white font-bold"
+          onClick={quitApp}
+        >
+          Back
+        </button>
+      </div>
     </div>
   );
 }
