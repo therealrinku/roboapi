@@ -39,6 +39,9 @@ export default function SuperApiClient() {
   const [apiKeyKey, setApiKeyKey] = useState<string>('');
   const [apiKeyValue, setApiKeyValue] = useState<string>('');
   const [isApiKeyActive, setIsApiKeyActive] = useState(false);
+  const [passApiKeyBy, setPassApiKeyBy] = useState<'headers' | 'params'>(
+    'headers',
+  );
 
   const [activeResponseTab, setActiveResponseTab] = useState<
     'Response' | 'Headers' | 'Cookies'
@@ -65,11 +68,19 @@ export default function SuperApiClient() {
     const isApiKeyPresentAndActive =
       isApiKeyActive && apiKeyKey.trim() && apiKeyValue.trim();
     if (isApiKeyPresentAndActive) {
-      activeHeaders.push({
-        key: apiKeyKey,
-        value: apiKeyValue,
-        isActive: isApiKeyActive,
-      });
+      if (passApiKeyBy === 'headers') {
+        activeHeaders.push({
+          key: apiKeyKey,
+          value: apiKeyValue,
+          isActive: isApiKeyActive,
+        });
+      } else {
+        activeParams.push({
+          key: apiKeyKey,
+          value: apiKeyValue,
+          isActive: isApiKeyActive,
+        });
+      }
     }
 
     window.electron.ipcRenderer.sendMessage('send-api-request', {
@@ -359,7 +370,7 @@ export default function SuperApiClient() {
                   onClick={() => setAuthorizationType('api_key')}
                   className={`mt-2 flex items-center gap-2 ${authorizationType === 'api_key' ? 'font-bold' : ''}`}
                 >
-                  Api Key (through headers)
+                  Api Key
                 </button>
               </div>
               {authorizationType === 'bearer' && (
@@ -386,31 +397,48 @@ export default function SuperApiClient() {
                 </div>
               )}
               {authorizationType === 'api_key' && (
-                <div className="flex items-center justify-between mt-2">
-                  <input
-                    value={apiKeyKey ?? ''}
-                    onChange={(e) => setApiKeyKey(e.target.value)}
-                    type="text"
-                    placeholder="Key"
-                    className="w-[43%] border p-2 rounded outline-none bg-gray-100"
-                  />
-                  <input
-                    value={apiKeyValue ?? ''}
-                    onChange={(e) => setApiKeyValue(e.target.value)}
-                    type="text"
-                    placeholder="Value"
-                    className="w-[43%] border p-2 rounded outline-none bg-gray-100"
-                  />
-                  <button onClick={() => setIsApiKeyActive((prev) => !prev)}>
-                    {isApiKeyActive ? (
-                      <GoCheckCircleFill size={16} />
-                    ) : (
-                      <GoCheckCircle size={16} />
-                    )}
-                  </button>
-                  <button onClick={() => setBearerToken(null)}>
-                    <FiTrash2 size={16} color="red" />
-                  </button>
+                <div>
+                  <div className="flex items-center justify-between mt-2">
+                    <input
+                      value={apiKeyKey ?? ''}
+                      onChange={(e) => setApiKeyKey(e.target.value)}
+                      type="text"
+                      placeholder="Key"
+                      className="w-[43%] border p-2 rounded outline-none bg-gray-100"
+                    />
+                    <input
+                      value={apiKeyValue ?? ''}
+                      onChange={(e) => setApiKeyValue(e.target.value)}
+                      type="text"
+                      placeholder="Value"
+                      className="w-[43%] border p-2 rounded outline-none bg-gray-100"
+                    />
+                    <button onClick={() => setIsApiKeyActive((prev) => !prev)}>
+                      {isApiKeyActive ? (
+                        <GoCheckCircleFill size={16} />
+                      ) : (
+                        <GoCheckCircle size={16} />
+                      )}
+                    </button>
+                    <button onClick={() => setBearerToken(null)}>
+                      <FiTrash2 size={16} color="red" />
+                    </button>
+                  </div>
+
+                  <div className="mt-3 flex flex-col gap-2">
+                    <span className="font-bold">Pass through</span>
+                    <select
+                      disabled={!isApiKeyActive}
+                      className="bg-gray-100 p-2 outline-none w-full rounded"
+                      value={passApiKeyBy}
+                      onChange={(e) =>
+                        setPassApiKeyBy(e.target.value as 'headers' | 'params')
+                      }
+                    >
+                      <option value="headers">Headers</option>
+                      <option value="params">Params</option>
+                    </select>
+                  </div>
                 </div>
               )}
             </div>
