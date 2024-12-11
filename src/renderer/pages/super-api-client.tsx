@@ -55,8 +55,7 @@ export default function SuperApiClient() {
   ]);
   const [body, setBody] = useState<any>('');
 
-  async function sendReq(event?: FormEvent<HTMLFormElement>) {
-    event?.preventDefault();
+  async function sendReq() {
     setLoading(true);
 
     const activeHeaders = headers.filter(
@@ -206,7 +205,10 @@ export default function SuperApiClient() {
             </p>
           </div>
           <form
-            onSubmit={sendReq}
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendReq();
+            }}
             className="flex items-center mt-2 pr-3 bg-gray-100 rounded"
           >
             <select
@@ -431,7 +433,12 @@ export default function SuperApiClient() {
                         <GoCheckCircle size={16} />
                       )}
                     </button>
-                    <button onClick={() => setBearerToken(null)}>
+                    <button
+                      onClick={() => {
+                        setApiKeyKey('');
+                        setApiKeyValue('');
+                      }}
+                    >
                       <FiTrash2 size={16} color="red" />
                     </button>
                   </div>
