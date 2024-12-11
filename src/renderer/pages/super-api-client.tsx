@@ -177,7 +177,8 @@ export default function SuperApiClient() {
     (param) => param.key.trim() && param.isActive,
   ).length;
   const authorizationExists =
-    isBearerTokenActive && bearerToken && bearerToken.trim().length > 0;
+    (isBearerTokenActive && bearerToken && bearerToken.trim().length > 0) ||
+    (isApiKeyActive && apiKeyKey.trim() && apiKeyValue.trim());
 
   const responseHeadersCount = Object.keys(response.responseHeaders).length;
   const responseCookieCount = Object.keys(response.responseCookies).length;
