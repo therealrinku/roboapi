@@ -25,14 +25,6 @@ export function registerSuperApiClientIpcHandlers(
       credentials: 'include',
     };
 
-    // add bearer token if provided
-    if (args.bearerToken?.trim()) {
-      reqObj.headers = {
-        ...reqObj.headers,
-        Authorization: `Bearer ${args.bearerToken}`,
-      };
-    }
-
     try {
       const resp = await fetch(reqUrl, reqObj);
 

@@ -38,7 +38,7 @@ export default function SuperApiClient() {
   const [isBearerTokenActive, setIsBearerTokenActive] = useState(true);
   const [apiKeyKey, setApiKeyKey] = useState<string>('');
   const [apiKeyValue, setApiKeyValue] = useState<string>('');
-  const [isApiKeyActive, setIsApiKeyActive] = useState(false);
+  const [isApiKeyActive, setIsApiKeyActive] = useState(true);
   const [passApiKeyBy, setPassApiKeyBy] = useState<'headers' | 'params'>(
     'headers',
   );
@@ -65,6 +65,7 @@ export default function SuperApiClient() {
     const activeParams = params.filter(
       (param) => param.key.trim() && param.isActive,
     );
+
     const isApiKeyPresentAndActive =
       isApiKeyActive && apiKeyKey.trim() && apiKeyValue.trim();
     if (isApiKeyPresentAndActive) {
@@ -83,13 +84,22 @@ export default function SuperApiClient() {
       }
     }
 
+    const isBearerTokenActiveAndPresent =
+      isBearerTokenActive && bearerToken && bearerToken.trim();
+    if (isBearerTokenActiveAndPresent) {
+      activeHeaders.push({
+        key: 'Authorization',
+        value: `Bearer ${bearerToken}`,
+        isActive: isApiKeyActive,
+      });
+    }
+
     window.electron.ipcRenderer.sendMessage('send-api-request', {
       reqType: reqType,
       reqUrl: reqUrl.current?.value,
       headers: activeHeaders,
       params: activeParams,
       body: body,
-      bearerToken: isBearerTokenActive ? bearerToken : null,
     });
 
     window.electron.ipcRenderer.once('send-api-request', (arg) => {
