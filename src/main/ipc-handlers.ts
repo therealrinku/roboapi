@@ -61,7 +61,6 @@ export function registerSuperApiClientIpcHandlers(
 
       event.reply('send-api-request', eventReplyObj);
     } catch (err) {
-      console.log(err, 'err');
       // throw 404 if some weird error happens, for now at least :)
       const eventReplyObj = {
         responseData: null,
