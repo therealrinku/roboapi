@@ -487,7 +487,7 @@ export default function SuperApiClient() {
             <Loading />
           </div>
         )}
-        {response.responseCode && !loading && (
+        {(response.responseCode || response.responseStatusText) && !loading && (
           <div className="bg-gray-100">
             <div className="flex items-center gap-5 border-b px-5 pb-2">
               <button
@@ -499,28 +499,32 @@ export default function SuperApiClient() {
                   {response.responseCode} {response.responseStatusText}
                 </span>
               </button>
-              <button
-                className={`mt-2 flex items-center ${activeResponseTab === 'Headers' ? 'font-bold' : ''}`}
-                onClick={() => setActiveResponseTab('Headers')}
-              >
-                Headers
-                {responseHeadersCount > 0 && (
-                  <span className="rounded px-[5px] ml-1 border">
-                    {responseHeadersCount}
-                  </span>
-                )}
-              </button>
-              <button
-                className={`mt-2 flex items-center ${activeResponseTab === 'Cookies' ? 'font-bold' : ''}`}
-                onClick={() => setActiveResponseTab('Cookies')}
-              >
-                Cookies
-                {responseCookieCount > 0 && (
-                  <span className="rounded px-[5px] ml-1 border">
-                    {responseCookieCount}
-                  </span>
-                )}
-              </button>
+              {Object.keys(response.responseHeaders).length > 0 && (
+                <button
+                  className={`mt-2 flex items-center ${activeResponseTab === 'Headers' ? 'font-bold' : ''}`}
+                  onClick={() => setActiveResponseTab('Headers')}
+                >
+                  Headers
+                  {responseHeadersCount > 0 && (
+                    <span className="rounded px-[5px] ml-1 border">
+                      {responseHeadersCount}
+                    </span>
+                  )}
+                </button>
+              )}
+              {Object.keys(response.responseCookies).length > 0 && (
+                <button
+                  className={`mt-2 flex items-center ${activeResponseTab === 'Cookies' ? 'font-bold' : ''}`}
+                  onClick={() => setActiveResponseTab('Cookies')}
+                >
+                  Cookies
+                  {responseCookieCount > 0 && (
+                    <span className="rounded px-[5px] ml-1 border">
+                      {responseCookieCount}
+                    </span>
+                  )}
+                </button>
+              )}
             </div>
             {activeResponseTab === 'Response' && (
               <div>
@@ -542,7 +546,7 @@ export default function SuperApiClient() {
                     ? response.responseData
                     : isJSONResponse
                       ? JSON.stringify(response.responseData, null, 2)
-                      : '<NO RESPONSE>'}
+                      : null}
                 </pre>
               </div>
             )}

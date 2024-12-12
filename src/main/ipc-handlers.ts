@@ -60,14 +60,13 @@ export function registerSuperApiClientIpcHandlers(
       };
 
       event.reply('send-api-request', eventReplyObj);
-    } catch (err) {
-      // throw 404 if some weird error happens, for now at least :)
+    } catch (err:any) {
       const eventReplyObj = {
         responseData: null,
         responseHeaders: {},
         responseCookies: {},
-        responseCode: '404',
-        responseStatusText: 'Not Found',
+        responseCode: null,
+        responseStatusText: err.message,
         requestUrl: args.reqUrl,
       };
 
