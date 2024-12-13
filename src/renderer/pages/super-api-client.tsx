@@ -15,6 +15,7 @@ import {
   ISuperApiResponse,
   ISuperApiTabs,
 } from '../global';
+import ReactJsonView from '@microlink/react-json-view';
 
 export default function SuperApiClient() {
   const reqUrl = useRef<HTMLInputElement>(null);
@@ -535,18 +536,26 @@ export default function SuperApiClient() {
                         JSON.stringify(response.responseData),
                       )
                     }
-                    className="py-2 px-5 flex items-center gap-2 ml-auto absolute bg-gray-100 right-0"
+                    className="py-2 px-5 flex items-center gap-2 ml-auto absolute bg-gray-100 right-0 z-50"
                   >
                     <FiClipboard size={15} />
                     Copy
                   </button>
                 )}
                 <pre className="h-screen overflow-y-auto px-5 pt-2 pb-16 w-full break-all">
-                  {isHTMLResponse
-                    ? response.responseData
-                    : isJSONResponse
-                      ? JSON.stringify(response.responseData, null, 2)
-                      : null}
+                  {isHTMLResponse ? (
+                    response.responseData
+                  ) : isJSONResponse ? (
+                    <ReactJsonView
+                      //@ts-expect-error needs fixing
+                      src={response.responseData}
+                      enableClipboard={false}
+                      style={{ fontFamily: 'Geist' }}
+                      displayObjectSize={false}
+                      displayDataTypes={false}
+                      iconStyle="circle"
+                    />
+                  ) : null}
                 </pre>
               </div>
             )}
