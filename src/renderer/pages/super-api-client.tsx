@@ -16,6 +16,8 @@ import {
   ISuperApiTabs,
 } from '../global';
 import ReactJsonView from '@microlink/react-json-view';
+import ReactCodeMirror from '@uiw/react-codemirror';
+import { json } from '@codemirror/lang-json';
 
 export default function SuperApiClient() {
   const reqUrl = useRef<HTMLInputElement>(null);
@@ -472,11 +474,12 @@ export default function SuperApiClient() {
                   JSON
                 </button>
               </div>
-              <textarea
+              <ReactCodeMirror
+                extensions={[json()]}
                 value={body}
-                onChange={(e) => setBody(e.target.value)}
-                className="border rounded mt-2 w-full h-[73vh] outline-none p-2 bg-gray-100"
-              ></textarea>
+                onChange={(e) => setBody(e)}
+                className="w-full mt-2 border"
+              />
             </div>
           )}
         </div>
