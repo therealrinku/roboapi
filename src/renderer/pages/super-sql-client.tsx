@@ -31,6 +31,7 @@ export default function SuperSqlClient() {
     ISuperSqlDbQueryResponse | null | undefined
   >(null);
   const [dbTables, setDbTables] = useState<ISuperSqlDbTables>([]);
+  const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [onHoverTableValue, setOnHoverTableValue] = useState<string | null>(
     null,
   );
@@ -173,11 +174,12 @@ export default function SuperSqlClient() {
                   dbTables.map((row) => {
                     return (
                       <button
-                        className="py-2 w-full bg-gray-100 rounded flex items-center gap-2 outline-none pl-2"
+                        className={`${selectedTable === row.table_name ? 'font-bold' : ''} py-2 w-full bg-gray-100 rounded flex items-center gap-2 outline-none pl-2`}
                         key={row.table_name}
-                        onClick={() =>
-                          sendQuery(`select * from ${row.table_name}`)
-                        }
+                        onClick={() => {
+                          sendQuery(`select * from ${row.table_name}`);
+                          setSelectedTable(row.table_name);
+                        }}
                       >
                         <FiTable />
                         {row.table_name}
