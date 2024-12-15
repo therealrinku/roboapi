@@ -17,12 +17,15 @@ import {
   ISuperSqlSendQueryResponse,
 } from '../global';
 import ConnectionForm from '../components/supersql/connection-form';
+import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import { sql } from '@codemirror/lang-sql';
+import { autocompletion } from '@codemirror/autocomplete';
 
 export default function SuperSqlClient() {
-  const queryRef = useRef<HTMLTextAreaElement>(null);
   const { quitApp } = useSuperApp();
 
   const [activeTab, setActiveTab] = useState<'Tables' | 'Query'>('Tables');
+  const [query, setQuery] = useState('');
 
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingTables, setLoadingTables] = useState<boolean>(false);
@@ -92,6 +95,21 @@ export default function SuperSqlClient() {
 
   const rows = dbResponse ? dbResponse.rows : [];
 
+  //@ts-expect-error
+  function tableAutoCompletions(context) {
+    let word = context.matchBefore(/\w*/);
+    if (word.from == word.to && !context.explicit) return null;
+    return {
+      from: word.from,
+      options: dbTables.map((table) => {
+        return {
+          label: table.table_name,
+          type: 'keyword',
+        };
+      }),
+    };
+  }
+
   if (!connectedDb) {
     return (
       <div className="flex flex-col h-screen text-xs w-[50%] mx-auto">
@@ -121,17 +139,9 @@ export default function SuperSqlClient() {
           {connectedDb && activeTab === 'Query' && (
             <div className="flex items-center gap-5 ml-auto pr-5">
               <button
-                className="font-bold"
-                onClick={() =>
-                  queryRef.current ? (queryRef.current.value = '') : () => {}
-                }
-              >
-                Clear Query
-              </button>
-              <button
                 disabled={loading}
                 className="font-bold flex items-center gap-2"
-                onClick={() => sendQuery(String(queryRef.current?.value))}
+                onClick={() => sendQuery(query)}
               >
                 <FiPlay />
               </button>
@@ -190,10 +200,15 @@ export default function SuperSqlClient() {
             )}
 
             {activeTab === 'Query' && (
-              <textarea
-                placeholder="Enter SQL Query"
-                ref={queryRef}
-                className="bg-gray-100 w-full h-[58vh] p-2 outline-none rounded mt-2"
+              <CodeMirror
+                value={query}
+                onChange={(e) => setQuery(e)}
+                height="80vh"
+                className="border outline-none"
+                extensions={[
+                  sql(),
+                  autocompletion({ override: [tableAutoCompletions] }),
+                ]}
               />
             )}
           </div>
