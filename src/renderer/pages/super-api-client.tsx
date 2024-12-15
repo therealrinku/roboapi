@@ -1,4 +1,4 @@
-import { FormEvent, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   FiBookmark,
   FiClipboard,
@@ -553,6 +553,7 @@ export default function SuperApiClient() {
                       style={{ fontFamily: 'Geist' }}
                       displayObjectSize={false}
                       displayDataTypes={false}
+                      displayArrayKey={false}
                       iconStyle="circle"
                     />
                   ) : null}
