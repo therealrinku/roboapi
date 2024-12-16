@@ -468,7 +468,6 @@ export default function SuperApiClient() {
             <div>
               <div>
                 <button
-                  // onClick={handleAddParams}
                   className="mt-2 flex items-center gap-2"
                 >
                   JSON
@@ -479,6 +478,7 @@ export default function SuperApiClient() {
                 value={body}
                 onChange={(e) => setBody(e)}
                 className="w-full mt-2 border"
+                height="70vh"
               />
             </div>
           )}
