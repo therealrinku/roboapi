@@ -3,7 +3,6 @@ import {
   FiBookmark,
   FiClipboard,
   FiPower,
-  FiSend,
   FiTrash2,
 } from 'react-icons/fi';
 import { GoCheckCircle, GoCheckCircleFill } from 'react-icons/go';
@@ -212,7 +211,7 @@ export default function SuperApiClient() {
               e.preventDefault();
               sendReq();
             }}
-            className="flex items-center mt-2 pr-3 bg-gray-100 rounded"
+            className="flex items-center mt-2 bg-gray-100 rounded"
           >
             <select
               className="bg-inherit px-1 outline-none w-24 font-bold"
@@ -232,10 +231,13 @@ export default function SuperApiClient() {
             <input
               ref={reqUrl}
               placeholder="Request Url"
-              className="w-full bg-inherit outline-none p-2 rounded"
+              className="w-full bg-inherit outline-none px-2 rounded"
             />
-            <button onClick={() => sendReq()}>
-              <FiSend />
+            <button
+              onClick={() => sendReq()}
+              className="font-bold bg-gray-200 py-3 px-5"
+            >
+              Send
             </button>
           </form>
         </div>
@@ -467,11 +469,7 @@ export default function SuperApiClient() {
           {activeTab === 'Body' && (
             <div>
               <div>
-                <button
-                  className="mt-2 flex items-center gap-2"
-                >
-                  JSON
-                </button>
+                <button className="mt-2 flex items-center gap-2">JSON</button>
               </div>
               <ReactCodeMirror
                 extensions={[json()]}
