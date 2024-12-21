@@ -1,8 +1,13 @@
-import { useRef, useState } from 'react';
+import { AiFillCaretRight } from 'react-icons/ai';
+import { useEffect, useRef, useState } from 'react';
 import {
+  FiAlertTriangle,
+  FiArrowRight,
   FiBookmark,
   FiClipboard,
+  FiFolder,
   FiPower,
+  FiScissors,
   FiTrash2,
 } from 'react-icons/fi';
 import { GoCheckCircle, GoCheckCircleFill } from 'react-icons/go';
@@ -19,9 +24,9 @@ import ReactCodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 
 export default function SuperApiClient() {
-  const reqUrl = useRef<HTMLInputElement>(null);
   const { quitApp } = useSuperApp();
 
+  const [reqUrl, setReqUrl] = useState('');
   const [reqType, setReqType] = useState<ISuperApiRequestTypes>('GET');
   const [response, setResponse] = useState<ISuperApiResponse>({
     requestUrl: null,
@@ -31,6 +36,12 @@ export default function SuperApiClient() {
     responseHeaders: {},
     responseCookies: {},
   });
+
+  /////////
+  const [rootFolder, setRootFolder] = useState(
+    localStorage.getItem('api_client_root_folder'),
+  );
+  ////
 
   const [activeTab, setActiveTab] = useState<ISuperApiTabs>('Headers');
   const [loading, setLoading] = useState<boolean>(false);
@@ -97,7 +108,7 @@ export default function SuperApiClient() {
 
     window.electron.ipcRenderer.sendMessage('send-api-request', {
       reqType: reqType,
-      reqUrl: reqUrl.current?.value,
+      reqUrl: reqUrl,
       headers: activeHeaders,
       params: activeParams,
       body: body,
@@ -188,23 +199,119 @@ export default function SuperApiClient() {
     response.responseHeaders['content-type']?.includes('text/html');
   const isJSONResponse =
     response.responseHeaders['content-type']?.includes('application/json');
+
+  useEffect(() => {
+    const apiPlaygroundSavedState = localStorage.getItem(
+      'api_client_playground_state',
+    );
+    if (apiPlaygroundSavedState) {
+      const parsed = JSON.parse(apiPlaygroundSavedState);
+      setActiveResponseTab(parsed.activeResponseTab);
+      if (parsed.response) {
+        setResponse(parsed.response);
+      }
+      setReqUrl(parsed.reqUrl);
+      setReqType(parsed.reqType ?? 'GET');
+      setActiveTab(parsed.activeTab);
+      setBearerToken(parsed.bearerToken);
+      setAuthorizationType(parsed.authorizationType);
+      setParams(parsed.params);
+      setHeaders(parsed.headers);
+      setIsBearerTokenActive(parsed.isBearerTokenActive);
+      setIsApiKeyActive(parsed.isApiKeyActive);
+      setBody(parsed.body);
+      setPassApiKeyBy(parsed.passApiKeyBy);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!rootFolder) {
+      const apiPlaygroundState = {
+        reqUrl,
+        activeResponseTab,
+        response,
+        reqType,
+        activeTab,
+        bearerToken,
+        authorizationType,
+        params,
+        headers,
+        isBearerTokenActive,
+        isApiKeyActive,
+        body,
+        passApiKeyBy,
+      };
+
+      localStorage.setItem(
+        'api_client_playground_state',
+        JSON.stringify(apiPlaygroundState),
+      );
+    }
+  }, [
+    response,
+    reqUrl,
+    reqType,
+    activeTab,
+    bearerToken,
+    authorizationType,
+    activeResponseTab,
+    params,
+    headers,
+    bearerToken,
+    isBearerTokenActive,
+    isApiKeyActive,
+    body,
+    passApiKeyBy,
+  ]);
+
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
       <div className="w-[50%] px-5 gap-3 mt-5">
-        <div className="absolute bottom-0 left-0 pl-5 py-2 border-t w-[50%]">
+        <div className="absolute bottom-0 left-0 h-8 border-t w-[50%] flex items-center">
           <button
-            className="flex items-center gap-2 font-bold"
+            className="flex items-center gap-2 font-bold h-full bg-red-500 px-5"
             onClick={quitApp}
           >
-            <FiPower size={15} />
+            <FiPower size={15} color="white" />
           </button>
+
+          {rootFolder ? (
+            <button
+              className="flex items-center gap-2 font-bold bg-gray-200 h-full px-4"
+              onClick={quitApp}
+            >
+              <FiFolder size={15} />
+              {rootFolder}
+            </button>
+          ) : (
+            <div className="flex items-center h-full">
+              <button
+                className="flex items-center gap-2 font-bold bg-gray-200 h-full px-4 border-l border-gray-100 hidden"
+                onClick={quitApp}
+              >
+                <FiFolder size={15} />
+                Open Folder
+              </button>
+              <div className="flex items-center gap-2 h-full px-4">
+                <FiAlertTriangle color="red" size={15} />
+                Playground
+              </div>
+            </div>
+          )}
         </div>
 
         <div>
           <div className="flex items-center gap-2">
-            <p className="font-bold flex items-center gap-2">
-              <FiBookmark size={15} /> Unsaved
-            </p>
+            <div className="font-bold flex items-center gap-2">
+              {rootFolder ? (
+                <p>{rootFolder}</p>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <FiAlertTriangle size={15} />
+                  <p>Playground</p>
+                </div>
+              )}
+            </div>
           </div>
           <form
             onSubmit={(e) => {
@@ -229,7 +336,8 @@ export default function SuperApiClient() {
               <option value="HEAD">HEAD</option>
             </select>
             <input
-              ref={reqUrl}
+              value={reqUrl}
+              onChange={(e) => setReqUrl(e.target.value)}
               placeholder="Request Url"
               className="w-full bg-inherit outline-none px-2 rounded"
             />
