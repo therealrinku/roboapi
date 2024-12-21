@@ -280,19 +280,12 @@ export default function SuperApiClient() {
               {rootFolder}
             </button>
           ) : (
-            <div className="flex items-center h-full">
-              <button
-                className="flex items-center gap-2 font-bold bg-gray-200 h-full px-4 border-l border-gray-100 hidden"
-                onClick={quitApp}
-              >
-                <FiFolder size={15} />
-                Open Folder
-              </button>
-              <div className="flex items-center gap-2 h-full px-4">
-                <FiAlertTriangle color="red" size={15} />
-                Playground
-              </div>
-            </div>
+            <button
+              className="flex items-center gap-2 font-bold bg-gray-200 h-full px-4 border-l border-gray-100 hidden"
+            >
+              <FiFolder size={15} />
+              Open Folder
+            </button>
           )}
         </div>
 
@@ -303,7 +296,7 @@ export default function SuperApiClient() {
                 <p>{rootFolder}</p>
               ) : (
                 <div className="flex items-center gap-2">
-                  <FiAlertTriangle size={15} />
+                  <FiAlertTriangle size={15} color="red" />
                   <p>Playground</p>
                 </div>
               )}
