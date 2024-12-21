@@ -1,13 +1,9 @@
-import { AiFillCaretRight } from 'react-icons/ai';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   FiAlertTriangle,
-  FiArrowRight,
-  FiBookmark,
   FiClipboard,
   FiFolder,
   FiPower,
-  FiScissors,
   FiTrash2,
 } from 'react-icons/fi';
 import { GoCheckCircle, GoCheckCircleFill } from 'react-icons/go';
@@ -318,10 +314,10 @@ export default function SuperApiClient() {
               e.preventDefault();
               sendReq();
             }}
-            className="flex items-center mt-2 bg-gray-100 rounded"
+            className="flex items-center mt-2 bg-gray-100 rounded h-9"
           >
             <select
-              className="bg-inherit px-1 outline-none w-24 font-bold"
+              className="pl-5 outline-none font-bold bg-gray-200 h-full rounded-tl rounded-bl"
               value={reqType}
               onChange={(e) =>
                 setReqType(e.target.value as ISuperApiRequestTypes)
@@ -339,11 +335,11 @@ export default function SuperApiClient() {
               value={reqUrl}
               onChange={(e) => setReqUrl(e.target.value)}
               placeholder="Request Url"
-              className="w-full bg-inherit outline-none px-2 rounded"
+              className="w-full bg-inherit outline-none px-2 border-l border-gray-200 h-full"
             />
             <button
               onClick={() => sendReq()}
-              className="font-bold bg-gray-200 py-3 px-5"
+              className="font-bold bg-gray-200 px-5 rounded-tr rounded-br h-full"
             >
               Send
             </button>
@@ -656,8 +652,8 @@ export default function SuperApiClient() {
                     response.responseData
                   ) : isJSONResponse ? (
                     <ReactJsonView
-                      //@ts-expect-error needs fixing
-                      src={response.responseData}
+                      //@ts-expect-error
+                      src={response.responseData as string}
                       enableClipboard={false}
                       style={{ fontFamily: 'Geist' }}
                       displayObjectSize={false}
