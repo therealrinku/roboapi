@@ -9,10 +9,6 @@
   </p>
 </div>
 
-## About The Project
-
-superapp is minimalistic and simple api and sql client designed to be simple and helpful but not might be the most fanciest tool out there.
-
 ## Features
 
 ✨ Minimalistic API and SQL client
