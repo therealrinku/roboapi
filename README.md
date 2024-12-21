@@ -15,11 +15,15 @@ superapp is minimalistic and simple api and sql client designed to be simple and
 
 ## Features
 
-- ✨ Minimalistic API and SQL client
-- ✨ Designed to be simple and minimal to get basic things done rather than being feature packed
-- 🔥 Not an replacement for any tool, it's a tool on its own league
-- 🔥 Local only: all your data are saved locally, no cloud sync or shit like that
-- 🔥 Under development, that means app will be improved and maintained consistently
+✨ Minimalistic API and SQL client
+
+✨ Designed to be simple and minimal to get basic things done rather than being feature packed
+
+🔥 Not an replacement for any tool, it's a tool on its own league
+
+🔥 Local only: all your data are saved locally, no cloud sync or shit like that
+
+🔥 Under development, that means app will be improved and maintained consistently
 
 <img width="1118" alt="Screenshot 2024-12-21 at 14 28 47" src="https://github.com/user-attachments/assets/c250a5ee-1637-42dc-b975-4c361449ec1d" />
 <img width="1118" alt="Screenshot 2024-12-21 at 14 26 59" src="https://github.com/user-attachments/assets/7b3593ca-98d8-49b1-8fad-6fc6c47d7569" />
@@ -49,7 +53,6 @@ To run this project locally, follow these steps:
    yarn start
 
 ## Build and create a package
-1. Run.
    ```bash
    yarn package
 
