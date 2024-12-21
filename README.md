@@ -34,12 +34,6 @@ superapp is minimalistic and simple api and sql client designed to be simple and
 
 To run this project locally, follow these steps:
 
-### Prerequisites
-
-- Node.js installed
-
-## Installation
-
 1. Clone the repository.
    ```bash
    git clone https://github.com/therealrinku/roboshare.git
