@@ -1,7 +1,7 @@
 {
-  "name": "robonotes",
+  "name": "superapp",
   "version": "0.0.6",
-  "description": "not just another note taking app",
+  "description": "minimal api+sql client",
   "license": "MIT",
   "author": {
     "name": "Rinku Chaudhari",

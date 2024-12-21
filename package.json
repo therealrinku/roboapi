@@ -1,5 +1,5 @@
 {
-  "description": "not just another note taking app",
+  "description": "minimal api+sql client",
   "keywords": [
     "electron",
     "boilerplate",
@@ -11,13 +11,13 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/therealrinku/robonotes.git#readme",
+  "homepage": "https://github.com/therealrinku/superapp.git#readme",
   "bugs": {
-    "url": "https://github.com/therealrinku/robonotes.git/issues"
+    "url": "https://github.com/therealrinku/superapp.git/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/therealrinku/robonotes.git.git"
+    "url": "git+https://github.com/therealrinku/super.git.git"
   },
   "license": "MIT",
   "author": {
@@ -174,8 +174,8 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "robonotes",
-    "appId": "org.erb.robonotes",
+    "productName": "superapp",
+    "appId": "org.erb.superapp",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -235,7 +235,7 @@
     "publish": {
       "provider": "github",
       "owner": "Rinku Chaudhari",
-      "repo": "robonotes"
+      "repo": "superapp"
     }
   },
   "collective": {},

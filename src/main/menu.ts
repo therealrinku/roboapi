@@ -157,15 +157,7 @@ export default class MenuBuilder {
         {
           label: 'View Source Code',
           click() {
-            shell.openExternal('https://github.com/therealrinku/robonotes');
-          },
-        },
-        {
-          label: 'Website',
-          click() {
-            shell.openExternal(
-              'https://therealrinku.github.io/robonotes/website/index.html',
-            );
+            shell.openExternal('https://github.com/therealrinku/superapp');
           },
         },
       ],
@@ -193,7 +185,7 @@ export default class MenuBuilder {
             },
           },
           {
-            label: '&Close robonotes',
+            label: '&Close',
             accelerator: 'Ctrl+W',
             click: () => {
               this.mainWindow.close();
@@ -261,17 +253,9 @@ export default class MenuBuilder {
           {
             label: 'View Source Code',
             click() {
-              shell.openExternal('https://github.com/therealrinku/robonotes');
+              shell.openExternal('https://github.com/therealrinku/superapp');
             },
-          },
-          {
-            label: 'Website',
-            click() {
-              shell.openExternal(
-                'https://therealrinku.github.io/robonotes/website/index.html',
-              );
-            },
-          },
+          }
         ],
       },
     ];
