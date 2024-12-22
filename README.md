@@ -30,7 +30,7 @@
 <img src="https://img.shields.io/badge/electron-000000?style=for-the-badge&logo=electron&logoColor=white"/>
 <img src="https://img.shields.io/badge/react-000000?style=for-the-badge&logo=react&logoColor=blue"/>
 <img src="https://img.shields.io/badge/tailwindcss-000000?style=for-the-badge&logo=tailwindcss&logoColor=blue"/>
-
+<img src="https://img.shields.io/badge/typescript-000000?style=for-the-badge&logo=typescript&logoColor=blue"/>
 
 ## Contribute to the Project
 
