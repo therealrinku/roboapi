@@ -26,6 +26,12 @@
 <img width="1118" alt="Screenshot 2024-12-21 at 14 28 32" src="https://github.com/user-attachments/assets/4662d0c1-a6ef-4d49-89eb-62c032258d75" />
 
 
+## Technologies Used
+<img src="https://img.shields.io/badge/electron-000000?style=for-the-badge&logo=electron&logoColor=white"/>
+<img src="https://img.shields.io/badge/react-000000?style=for-the-badge&logo=react&logoColor=blue"/>
+<img src="https://img.shields.io/badge/tailwindcss-000000?style=for-the-badge&logo=tailwindcss&logoColor=blue"/>
+
+
 ## Contribute to the Project
 
 To run this project locally, follow these steps:
