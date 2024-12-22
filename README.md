@@ -1,12 +1,7 @@
 <div align="center">
     <img src="https://cdn-icons-png.flaticon.com/128/10238/10238788.png" alt="Logo" width="80" height="80">
-
-  <h3 align="center">superapp</h3>
-
-  <p align="center">
-    Minimalistic and simplistic sql and api client under development
-    <br />
-  </p>
+    <h3>superapp</h3>
+    <p>Minimalistic and simplistic sql and api client under development</p>
 </div>
 
 ## Features
@@ -21,6 +16,7 @@
 
 🔥 Under development, that means app will be improved and maintained consistently
 
+## Headshots
 <img width="1118" alt="Screenshot 2024-12-21 at 14 28 47" src="https://github.com/user-attachments/assets/c250a5ee-1637-42dc-b975-4c361449ec1d" />
 <img width="1118" alt="Screenshot 2024-12-21 at 14 26 59" src="https://github.com/user-attachments/assets/7b3593ca-98d8-49b1-8fad-6fc6c47d7569" />
 <img width="1118" alt="Screenshot 2024-12-21 at 14 28 32" src="https://github.com/user-attachments/assets/4662d0c1-a6ef-4d49-89eb-62c032258d75" />
