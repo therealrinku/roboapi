@@ -310,7 +310,7 @@ export default function SuperApiClient() {
             className="flex items-center mt-2 bg-gray-100 rounded h-9"
           >
             <select
-              className="pl-5 outline-none font-bold bg-gray-200 h-full rounded-tl rounded-bl"
+              className="px-3 outline-none font-bold bg-inherit h-full rounded-tl rounded-bl"
               value={reqType}
               onChange={(e) =>
                 setReqType(e.target.value as ISuperApiRequestTypes)
