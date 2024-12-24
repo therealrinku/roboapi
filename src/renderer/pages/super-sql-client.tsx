@@ -20,6 +20,7 @@ import ConnectionForm from '../components/supersql/connection-form';
 import CodeMirror from '@uiw/react-codemirror';
 import { sql } from '@codemirror/lang-sql';
 import { autocompletion } from '@codemirror/autocomplete';
+import { table } from 'console';
 
 export default function SuperSqlClient() {
   const { quitApp } = useSuperApp();
@@ -111,14 +112,16 @@ export default function SuperSqlClient() {
 
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
-      <div className="w-[25%] px-5 gap-3 mt-5">
+      <div className="w-[25%] gap-3 mt-5">
         {!connectedDb && (
-          <ConnectionForm
-            onConnectionSuccess={(dbName) => {
-              setConnectedDb(dbName);
-              fetchTables();
-            }}
-          />
+          <div className="px-5">
+            <ConnectionForm
+              onConnectionSuccess={(dbName) => {
+                setConnectedDb(dbName);
+                fetchTables();
+              }}
+            />
+          </div>
         )}
 
         {connectedDb && (
@@ -149,7 +152,7 @@ export default function SuperSqlClient() {
 
         {connectedDb && (
           <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-5 mx-5">
               <button
                 className={`${activeTab === 'Tables' && 'font-bold'} flex items-center gap-2 outline-none`}
                 onClick={() => setActiveTab('Tables')}
@@ -172,9 +175,9 @@ export default function SuperSqlClient() {
             </div>
 
             {activeTab === 'Tables' && (
-              <div className="flex flex-col gap-2 items-start">
+              <div className="flex flex-col items-start">
                 {loadingTables && (
-                  <p className="font-bold text-center mt-2">
+                  <p className="font-bold text-center mt-2 px-5">
                     Loading tables...
                   </p>
                 )}
@@ -182,7 +185,7 @@ export default function SuperSqlClient() {
                   dbTables.map((row) => {
                     return (
                       <button
-                        className={`${selectedTable === row.table_name ? 'font-bold' : ''} py-2 w-full bg-gray-100 rounded flex items-center gap-2 outline-none pl-2`}
+                        className={`${selectedTable === row.table_name ? 'bg-gray-100' : ''} py-2 w-full flex items-center gap-2 outline-none pl-5`}
                         key={row.table_name}
                         onClick={() => {
                           sendQuery(`select * from ${row.table_name}`);
@@ -227,12 +230,12 @@ export default function SuperSqlClient() {
                 <thead>
                   <tr>
                     {Object.keys(rows[0]).map((key, colIndex) => (
-                      <th
+                      <td
                         key={colIndex}
                         className="px-4 py-2 text-left bg-gray-200 sticky top-0"
                       >
                         {key}
-                      </th>
+                      </td>
                     ))}
                   </tr>
                 </thead>
