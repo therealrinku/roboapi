@@ -50,7 +50,7 @@ export default function ConnectionForm({ onConnectionSuccess }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-5 py-12 w-full">
+    <div className="flex flex-col gap-5 w-full">
       <div className="flex flex-col gap-2">
         <span className="font-bold">Connect With</span>
         <select

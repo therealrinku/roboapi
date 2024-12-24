@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   FiClipboard,
   FiDatabase,
@@ -17,7 +17,7 @@ import {
   ISuperSqlSendQueryResponse,
 } from '../global';
 import ConnectionForm from '../components/supersql/connection-form';
-import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import CodeMirror from '@uiw/react-codemirror';
 import { sql } from '@codemirror/lang-sql';
 import { autocompletion } from '@codemirror/autocomplete';
 
@@ -70,7 +70,6 @@ export default function SuperSqlClient() {
         setDbResponse(null);
       }
       setLoading(false);
-      quitApp();
     });
   }
 
@@ -110,44 +109,43 @@ export default function SuperSqlClient() {
     };
   }
 
-  if (!connectedDb) {
-    return (
-      <div className="flex flex-col h-screen text-xs w-[50%] mx-auto">
-        <ConnectionForm
-          onConnectionSuccess={(dbName) => {
-            setConnectedDb(dbName);
-            fetchTables();
-          }}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
       <div className="w-[25%] px-5 gap-3 mt-5">
-        <div className="absolute bottom-0 left-0 pl-5 py-2 border-t w-[25%] flex items-center gap-2">
-          <FiDatabase size={15} />
-          {connectedDb}
-          <button
-            className="flex items-center gap-2 font-bold"
-            onClick={disconnect}
-          >
-            <FiPower size={15} />
-          </button>
+        {!connectedDb && (
+          <ConnectionForm
+            onConnectionSuccess={(dbName) => {
+              setConnectedDb(dbName);
+              fetchTables();
+            }}
+          />
+        )}
 
-          {connectedDb && activeTab === 'Query' && (
-            <div className="flex items-center gap-5 ml-auto pr-5">
-              <button
-                disabled={loading}
-                className="font-bold flex items-center gap-2"
-                onClick={() => sendQuery(query)}
-              >
-                <FiPlay />
-              </button>
-            </div>
-          )}
-        </div>
+        {connectedDb && (
+          <div className="absolute bottom-0 left-0 h-8 border-t w-[25%] flex items-center gap-2">
+            <button
+              className="flex items-center gap-2 font-bold px-5 bg-red-500 h-full"
+              onClick={disconnect}
+            >
+              <FiPower size={15} color="white" />
+            </button>
+
+            <FiDatabase size={15} />
+            {connectedDb}
+
+            {connectedDb && activeTab === 'Query' && (
+              <div className="flex items-center gap-5 ml-auto pr-5">
+                <button
+                  disabled={loading}
+                  className="font-bold flex items-center gap-2"
+                  onClick={() => sendQuery(query)}
+                >
+                  <FiPlay />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {connectedDb && (
           <div className="flex flex-col gap-2">
