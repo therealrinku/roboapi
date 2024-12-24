@@ -222,14 +222,14 @@ export default function SuperSqlClient() {
 
         {!loading && dbResponse && (
           <div>
-            <div className="h-[100vh] overflow-auto pb-12">
-              <table className="table-auto border-collapse border-r border-b">
+            <div className="h-[100vh] overflow-auto pb-8">
+              <table className="table-auto border-collapse w-full">
                 <thead>
                   <tr>
                     {Object.keys(rows[0]).map((key, colIndex) => (
                       <th
                         key={colIndex}
-                        className="border border-gray-300 px-4 py-2 text-left bg-gray-200 sticky top-0"
+                        className="px-4 py-2 text-left bg-gray-200 sticky top-0"
                       >
                         {key}
                       </th>
@@ -238,13 +238,13 @@ export default function SuperSqlClient() {
                 </thead>
                 <tbody>
                   {rows.map((row, rowIndex: number) => (
-                    <tr key={rowIndex}>
+                    <tr key={rowIndex} className="even:bg-gray-100">
                       {Object.values(row).map((col, colIndex) => (
                         <td
                           key={colIndex}
                           title={col}
                           onClick={() => setOnHoverTableValue(col)}
-                          className="border border-gray-300 p-2 w-48 max-w-48 overflow-hidden truncate"
+                          className="p-2 w-48 max-w-48 overflow-hidden truncate"
                         >
                           {col}
                         </td>
