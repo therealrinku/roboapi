@@ -8,7 +8,6 @@ import {
   FiTable,
 } from 'react-icons/fi';
 import Loading from '../components/common/loading';
-import useSuperApp from '../hooks/use-super-app';
 import {
   ISuperSqlConnectionResponse,
   ISuperSqlDbQueryResponse,
@@ -20,11 +19,8 @@ import ConnectionForm from '../components/supersql/connection-form';
 import CodeMirror from '@uiw/react-codemirror';
 import { sql } from '@codemirror/lang-sql';
 import { autocompletion } from '@codemirror/autocomplete';
-import { table } from 'console';
 
 export default function SuperSqlClient() {
-  const { quitApp } = useSuperApp();
-
   const [activeTab, setActiveTab] = useState<'Tables' | 'Query'>('Tables');
   const [query, setQuery] = useState('');
 
@@ -125,16 +121,18 @@ export default function SuperSqlClient() {
         )}
 
         {connectedDb && (
-          <div className="absolute bottom-0 left-0 h-8 border-t w-[25%] flex items-center gap-2">
+          <div className="absolute bottom-0 left-0 h-8 border-t w-[25%] flex items-center">
             <button
-              className="flex items-center gap-2 font-bold px-5 bg-red-500 h-full"
+              className="flex items-center font-bold px-5 bg-red-500 h-full"
               onClick={disconnect}
             >
               <FiPower size={15} color="white" />
             </button>
 
-            <FiDatabase size={15} />
-            {connectedDb}
+            <div className="flex items-center gap-2 bg-gray-100 h-full px-5">
+              <FiDatabase size={15} />
+              {connectedDb}
+            </div>
 
             {connectedDb && activeTab === 'Query' && (
               <div className="flex items-center gap-5 ml-auto pr-5">
@@ -258,7 +256,7 @@ export default function SuperSqlClient() {
               </table>
             </div>
 
-            <div className="absolute bottom-0 right-0 pl-5 py-2 border-t w-[75%] flex items-center gap-5 bg-white border-l">
+            <div className="absolute bottom-0 right-0 pl-5 h-8 border-t w-[75%] flex items-center gap-5 bg-white border-l">
               <span>
                 <b>{rows.length}</b> rows
               </span>
