@@ -2,6 +2,8 @@ import { useState } from 'react';
 import {
   FiClipboard,
   FiDatabase,
+  FiDisc,
+  FiFrown,
   FiPlay,
   FiPower,
   FiRotateCw,
@@ -65,6 +67,7 @@ export default function SuperSqlClient() {
       } else {
         setConnectedDb(null);
         setDbResponse(null);
+        setSelectedTable(null);
       }
       setLoading(false);
     });
@@ -224,36 +227,43 @@ export default function SuperSqlClient() {
         {!loading && dbResponse && (
           <div>
             <div className="h-[100vh] overflow-auto pb-8">
-              <table className="table-auto border-collapse w-full">
-                <thead>
-                  <tr>
-                    {Object.keys(rows[0]).map((key, colIndex) => (
-                      <td
-                        key={colIndex}
-                        className="px-4 py-2 text-left bg-gray-200 sticky top-0"
-                      >
-                        {key}
-                      </td>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row, rowIndex: number) => (
-                    <tr key={rowIndex} className="even:bg-gray-100">
-                      {Object.values(row).map((col, colIndex) => (
+              {rows.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full w-full gap-3">
+                  <FiDisc size={50} />
+                  <p>no rows found</p>
+                </div>
+              ) : (
+                <table className="table-auto border-collapse w-full">
+                  <thead>
+                    <tr>
+                      {Object.keys(rows[0]).map((key, colIndex) => (
                         <td
                           key={colIndex}
-                          title={col}
-                          onClick={() => setOnHoverTableValue(col)}
-                          className="p-2 w-48 max-w-48 overflow-hidden truncate"
+                          className="px-4 py-2 text-left bg-gray-200 sticky top-0"
                         >
-                          {col}
+                          {key}
                         </td>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {rows.map((row, rowIndex: number) => (
+                      <tr key={rowIndex} className="even:bg-gray-100">
+                        {Object.values(row).map((col, colIndex) => (
+                          <td
+                            key={colIndex}
+                            title={col}
+                            onClick={() => setOnHoverTableValue(col)}
+                            className="p-2 w-48 max-w-48 overflow-hidden truncate"
+                          >
+                            {col}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
 
             <div className="absolute bottom-0 right-0 pl-5 h-8 border-t w-[75%] flex items-center gap-5 bg-white border-l">

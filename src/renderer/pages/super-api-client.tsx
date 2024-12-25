@@ -280,9 +280,7 @@ export default function SuperApiClient() {
               {rootFolder}
             </button>
           ) : (
-            <button
-              className="flex items-center gap-2 font-bold bg-gray-200 h-full px-4 border-l border-gray-100 hidden"
-            >
+            <button className="flex items-center gap-2 font-bold bg-gray-200 h-full px-4 border-l border-gray-100 hidden">
               <FiFolder size={15} />
               Open Folder
             </button>

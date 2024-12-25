@@ -165,7 +165,7 @@ export default function ConnectionForm({ onConnectionSuccess }: Props) {
           className="w-full bg-green-500 rounded p-2 text-white font-bold"
           onClick={handleConnectDb}
         >
-          Connect
+          {isLoading ? "Connecting...." : "Connect"}
         </button>
         <button
           className="w-full bg-gray-500 rounded p-2 text-white font-bold"
