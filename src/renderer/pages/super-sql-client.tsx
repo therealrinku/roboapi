@@ -3,7 +3,6 @@ import {
   FiClipboard,
   FiDatabase,
   FiDisc,
-  FiFrown,
   FiPlay,
   FiPower,
   FiRotateCw,
