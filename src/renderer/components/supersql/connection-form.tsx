@@ -1,13 +1,11 @@
 import { useRef, useState } from 'react';
 import { ISuperSqlConnectionResponse } from '../../global';
-import useSuperApp from '../../hooks/use-super-app';
 
 interface Props {
   onConnectionSuccess: (dbName: string) => void;
 }
 
 export default function ConnectionForm({ onConnectionSuccess }: Props) {
-  const { quitApp } = useSuperApp();
   const [connectWith, setConnectWith] = useState<
     'connection_string' | 'connection_inputs'
   >('connection_string');
@@ -159,21 +157,13 @@ export default function ConnectionForm({ onConnectionSuccess }: Props) {
         />
       </div>
 
-      <div className="w-full flex items-center gap-2">
-        <button
-          disabled={isLoading}
-          className="w-full bg-green-500 rounded p-2 text-white font-bold"
-          onClick={handleConnectDb}
-        >
-          {isLoading ? "Connecting...." : "Connect"}
-        </button>
-        <button
-          className="w-full bg-gray-500 rounded p-2 text-white font-bold"
-          onClick={quitApp}
-        >
-          Back
-        </button>
-      </div>
+      <button
+        disabled={isLoading}
+        className="w-full bg-green-500 rounded p-2 text-white font-bold"
+        onClick={handleConnectDb}
+      >
+        {isLoading ? 'Connecting....' : 'Connect'}
+      </button>
     </div>
   );
 }

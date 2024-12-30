@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   FiAlertTriangle,
+  FiArrowLeft,
   FiClipboard,
   FiFolder,
   FiPower,
@@ -265,10 +266,11 @@ export default function SuperApiClient() {
       <div className="w-[50%] px-5 gap-3 mt-5">
         <div className="absolute bottom-0 left-0 h-8 border-t w-[50%] flex items-center">
           <button
-            className="flex items-center gap-2 font-bold h-full bg-red-500 px-5"
+            className="flex items-center gap-2 font-bold h-full bg-gray-200 px-5"
             onClick={quitApp}
           >
-            <FiPower size={15} color="white" />
+            <FiArrowLeft size={15} />
+            Back
           </button>
 
           {rootFolder ? (

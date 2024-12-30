@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  FiArrowLeft,
   FiClipboard,
   FiDatabase,
   FiDisc,
@@ -20,8 +21,10 @@ import ConnectionForm from '../components/supersql/connection-form';
 import CodeMirror from '@uiw/react-codemirror';
 import { sql } from '@codemirror/lang-sql';
 import { autocompletion } from '@codemirror/autocomplete';
+import useSuperApp from '../hooks/use-super-app';
 
 export default function SuperSqlClient() {
+  const { quitApp } = useSuperApp();
   const [activeTab, setActiveTab] = useState<'Tables' | 'Query'>('Tables');
   const [query, setQuery] = useState('');
 
@@ -113,6 +116,15 @@ export default function SuperSqlClient() {
       <div className="w-[25%] gap-3 mt-5">
         {!connectedDb && (
           <div className="px-5">
+            <div className="absolute bottom-0 left-0 h-8 border-t w-[25%] flex items-center">
+              <button
+                className="flex items-center gap-2 font-bold h-full bg-gray-200 px-5"
+                onClick={quitApp}
+              >
+                <FiArrowLeft size={15} />
+                Back
+              </button>
+            </div>
             <ConnectionForm
               onConnectionSuccess={(dbName) => {
                 setConnectedDb(dbName);
