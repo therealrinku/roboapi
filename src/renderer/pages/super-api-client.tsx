@@ -310,7 +310,7 @@ export default function SuperApiClient() {
             className="flex items-center mt-2 bg-gray-100 rounded h-9"
           >
             <select
-              className="px-3 outline-none font-bold bg-inherit h-full rounded-tl rounded-bl"
+              className='h-full p-2 pr-8 outline-none'
               value={reqType}
               onChange={(e) =>
                 setReqType(e.target.value as ISuperApiRequestTypes)
@@ -549,7 +549,7 @@ export default function SuperApiClient() {
                     <span className="font-bold">Pass through</span>
                     <select
                       disabled={!isApiKeyActive}
-                      className="bg-gray-100 p-2 outline-none w-full rounded"
+                      className="bg-gray-100 p-2 outline-none w-full rounded border border-gray-200"
                       value={passApiKeyBy}
                       onChange={(e) =>
                         setPassApiKeyBy(e.target.value as 'headers' | 'params')
