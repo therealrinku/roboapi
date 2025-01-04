@@ -309,7 +309,7 @@ export default function SuperApiClient() {
             className="flex items-center mt-2 bg-gray-100 rounded h-9"
           >
             <select
-              className='h-full p-2 pr-7 outline-none pl-4'
+              className="h-full p-2 pr-7 outline-none pl-4"
               value={reqType}
               onChange={(e) =>
                 setReqType(e.target.value as ISuperApiRequestTypes)
@@ -626,7 +626,7 @@ export default function SuperApiClient() {
             </div>
             {activeResponseTab === 'Response' && (
               <div>
-                {response.responseData && (
+                {response.responseData && !isHTMLResponse && (
                   <button
                     onClick={() =>
                       navigator.clipboard.writeText(
@@ -639,9 +639,13 @@ export default function SuperApiClient() {
                     Copy
                   </button>
                 )}
-                <pre className="h-screen overflow-y-auto px-5 pt-2 pb-16 w-full break-all">
+                <div className="h-screen overflow-y-auto w-full break-all">
                   {isHTMLResponse ? (
-                    response.responseData
+                    <webview
+                      id="w"
+                      src={response.requestUrl}
+                      className="w-full h-full"
+                    ></webview>
                   ) : isJSONResponse ? (
                     <ReactJsonView
                       //@ts-expect-error
@@ -654,7 +658,7 @@ export default function SuperApiClient() {
                       iconStyle="circle"
                     />
                   ) : null}
-                </pre>
+                </div>
               </div>
             )}
             {activeResponseTab === 'Headers' && (
