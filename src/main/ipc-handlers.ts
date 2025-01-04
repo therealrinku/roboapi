@@ -31,14 +31,12 @@ export function registerSuperApiClientIpcHandlers(
       const headers: Record<string, string> = {};
       const cookies: Record<string, string> = {};
       resp.headers.forEach((value, key) => {
-        headers[key] = value;
-      });
-      resp.headers.forEach((value, key) => {
         if (key === 'set-cookie') {
           const cookie = value.split(';')[0];
           const [cookieKey, cookieValue] = cookie.split('=');
           cookies[cookieKey] = cookieValue;
         }
+        headers[key] = value;
       });
 
       let responseData = null;

@@ -15,8 +15,7 @@ export type ISuperApiResponse = {
   responseCode: null | string;
   responseStatusText: string | null;
   responseData: string | null;
-  responseHeaders: Record<string, string>;
-  responseCookies: Record<string, string>;
+  responseHeaders: Map<string, string>;
 };
 
 export type ISuperApiAuthorizationTypes = 'bearer' | 'api_key';

@@ -4,7 +4,6 @@ import {
   FiArrowLeft,
   FiClipboard,
   FiFolder,
-  FiPower,
   FiTrash2,
 } from 'react-icons/fi';
 import { GoCheckCircle, GoCheckCircleFill } from 'react-icons/go';
