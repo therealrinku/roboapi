@@ -643,7 +643,7 @@ export default function SuperApiClient() {
                   {isHTMLResponse ? (
                     <webview
                       id="w"
-                      src={response.requestUrl}
+                      src={response.requestUrl as string}
                       className="w-full h-full"
                     ></webview>
                   ) : isJSONResponse ? (
@@ -651,7 +651,7 @@ export default function SuperApiClient() {
                       //@ts-expect-error
                       src={response.responseData as string}
                       enableClipboard={false}
-                      style={{ fontFamily: 'Geist' }}
+                      style={{ fontFamily: 'Geist', padding: "10px 15px 50px 15px" }}
                       displayObjectSize={false}
                       displayDataTypes={false}
                       displayArrayKey={false}
