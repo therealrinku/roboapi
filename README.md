@@ -18,8 +18,9 @@
 
 ## Headshots
 <img width="1118" alt="Screenshot 2024-12-21 at 14 28 47" src="https://github.com/user-attachments/assets/c250a5ee-1637-42dc-b975-4c361449ec1d" />
-<img width="1118" alt="Screenshot 2024-12-21 at 14 26 59" src="https://github.com/user-attachments/assets/7b3593ca-98d8-49b1-8fad-6fc6c47d7569" />
-<img width="1118" alt="Screenshot 2024-12-21 at 14 28 32" src="https://github.com/user-attachments/assets/4662d0c1-a6ef-4d49-89eb-62c032258d75" />
+<img width="1195" alt="Screenshot 2025-01-05 at 09 52 07" src="https://github.com/user-attachments/assets/f1f77ebc-01ea-40ee-be80-3fcf25efaea5" />
+<img width="1195" alt="Screenshot 2025-01-05 at 09 52 23" src="https://github.com/user-attachments/assets/3477d061-d4a1-40a9-ad56-bc02c9dcac85" />
+<img width="1195" alt="Screenshot 2025-01-05 at 09 51 40" src="https://github.com/user-attachments/assets/e7d6c112-bb1f-479b-8f3c-5f38de7a35d6" />
 
 
 ## Technologies Used
