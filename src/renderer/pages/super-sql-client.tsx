@@ -155,7 +155,7 @@ export default function SuperSqlClient() {
                   className="font-bold flex items-center gap-2"
                   onClick={() => sendQuery(query)}
                 >
-                  <FiPlay />
+                  <FiPlay size={15}/> Run
                 </button>
               </div>
             )}
