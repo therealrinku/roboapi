@@ -12,7 +12,7 @@
 
 🔥 Not an replacement for any tool, it's a tool on its own league
 
-🔥 Local only: all your data are saved locally, no cloud sync or shit like that
+🔥 Local only: all your data are saved locally, no cloud sync or sh*t like that
 
 🔥 Under development, that means app will be improved and maintained consistently
 
