@@ -22,6 +22,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { sql } from '@codemirror/lang-sql';
 import { autocompletion } from '@codemirror/autocomplete';
 import useSuperApp from '../hooks/use-super-app';
+import { pgDataTypes } from '../utils/pg';
 
 export default function SuperSqlClient() {
   const { quitApp } = useSuperApp();
@@ -155,7 +156,7 @@ export default function SuperSqlClient() {
                   className="font-bold flex items-center gap-2"
                   onClick={() => sendQuery(query)}
                 >
-                  <FiPlay size={15}/> Run
+                  <FiPlay size={15} /> Run
                 </button>
               </div>
             )}
@@ -238,42 +239,43 @@ export default function SuperSqlClient() {
         {!loading && dbResponse && (
           <div>
             <div className="h-[100vh] overflow-auto pb-8">
-              {rows.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full w-full gap-3">
-                  <FiDisc size={50} />
-                  <p>no rows found</p>
-                </div>
-              ) : (
-                <table className="table-auto border-collapse w-full">
-                  <thead>
-                    <tr>
-                      {Object.keys(rows[0]).map((key, colIndex) => (
+              <table className="table-auto border-collapse w-full">
+                <thead>
+                  <tr>
+                    {dbResponse.fields.map((field, idx) => {
+                      //@ts-expect-error
+                      const dataType = pgDataTypes[field.dataTypeID];
+                      return (
+                        <td
+                          key={idx}
+                          className="px-4 py-2 text-left bg-gray-200 sticky top-0 whitespace-nowrap"
+                        >
+                          {field.name}{' '}
+                          <span className="font-bold">{dataType}</span>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row, rowIndex: number) => (
+                    <tr key={rowIndex} className="even:bg-gray-100">
+                      {Object.values(row).map((col, colIndex) => (
                         <td
                           key={colIndex}
-                          className="px-4 py-2 text-left bg-gray-200 sticky top-0"
+                          title={col}
+                          onClick={() => setOnHoverTableValue(col)}
+                          className="p-2 w-48 max-w-48 overflow-hidden truncate"
                         >
-                          {key}
+                          {col}
                         </td>
                       ))}
                     </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((row, rowIndex: number) => (
-                      <tr key={rowIndex} className="even:bg-gray-100">
-                        {Object.values(row).map((col, colIndex) => (
-                          <td
-                            key={colIndex}
-                            title={col}
-                            onClick={() => setOnHoverTableValue(col)}
-                            className="p-2 w-48 max-w-48 overflow-hidden truncate"
-                          >
-                            {col}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  ))}
+                </tbody>
+              </table>
+              {rows.length === 0 && (
+                <p className="p-5 text-center">no rows found</p>
               )}
             </div>
 
