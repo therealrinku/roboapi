@@ -3,7 +3,6 @@ import {
   FiArrowLeft,
   FiClipboard,
   FiDatabase,
-  FiDisc,
   FiPlay,
   FiPower,
   FiRotateCw,
@@ -251,7 +250,7 @@ export default function SuperSqlClient() {
                           className="px-4 py-2 text-left bg-gray-200 sticky top-0 whitespace-nowrap"
                         >
                           {field.name}{' '}
-                          <span className="font-bold">{dataType}</span>
+                          <span className="text-gray-500">{dataType}</span>
                         </td>
                       );
                     })}
