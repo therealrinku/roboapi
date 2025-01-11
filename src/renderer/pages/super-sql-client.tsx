@@ -238,7 +238,7 @@ export default function SuperSqlClient() {
         {!loading && dbResponse && (
           <div>
             <div className="h-[100vh] overflow-auto pb-8">
-              <table className="table-auto border-collapse w-full">
+              <table className="table-auto border-collapse w-full border-b">
                 <thead>
                   <tr>
                     {dbResponse.fields.map((field, idx) => {
@@ -264,7 +264,7 @@ export default function SuperSqlClient() {
                           key={colIndex}
                           title={col}
                           onClick={() => setOnHoverTableValue(col)}
-                          className="p-2 w-48 max-w-48 overflow-hidden truncate"
+                          className="py-2 px-4 w-48 max-w-48 overflow-hidden truncate"
                         >
                           {col}
                         </td>
