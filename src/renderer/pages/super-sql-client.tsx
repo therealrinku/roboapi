@@ -115,7 +115,7 @@ export default function SuperSqlClient() {
 
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
-      <div className="w-[25%] gap-3 mt-5">
+      <div className="w-[20%] gap-3 mt-5">
         {!connectedDb && (
           <div className="px-5">
             <div className="absolute bottom-0 left-0 h-8 border-t w-[25%] flex items-center">
@@ -137,7 +137,7 @@ export default function SuperSqlClient() {
         )}
 
         {connectedDb && (
-          <div className="absolute bottom-0 left-0 h-8 border-t w-[25%] flex items-center">
+          <div className="absolute bottom-0 left-0 h-8 border-t w-[20%] flex items-center">
             <button
               className="flex items-center font-bold px-5 bg-red-500 h-full"
               onClick={disconnect}
@@ -199,7 +199,7 @@ export default function SuperSqlClient() {
                   dbTables.map((row) => {
                     return (
                       <button
-                        className={`${selectedTable === row.table_name ? 'bg-gray-100' : ''} py-2 w-full flex items-center gap-2 outline-none pl-5`}
+                        className={`${selectedTable === row.table_name ? 'bg-gray-100' : ''} py-2 w-full flex gap-2 items-center outline-none pl-5`}
                         key={row.table_name}
                         onClick={() => {
                           sendQuery(`select * from ${row.table_name}`);
@@ -207,7 +207,7 @@ export default function SuperSqlClient() {
                         }}
                       >
                         <FiTable />
-                        {row.table_name}
+                        <p className="max-w-[80%] truncate">{row.table_name}</p>
                       </button>
                     );
                   })}
@@ -230,7 +230,7 @@ export default function SuperSqlClient() {
         )}
       </div>
 
-      <div className="w-[75%] border-l min-h-screen">
+      <div className="w-[80%] border-l min-h-screen">
         {loading && (
           <div className="h-screen w-full flex flex-col items-center justify-center">
             <Loading />
@@ -238,30 +238,35 @@ export default function SuperSqlClient() {
         )}
 
         {selectedRow && (
-          <div className="fixed right-0 top-0 z-50 bg-white w-[25%] h-screen py-5 border-l break-all overflow-y-auto shadow-lg">
+          <div className="fixed right-0 top-0 z-50 bg-white w-[25%] h-screen border-l break-all shadow-lg">
+            <div className="w-full flex items-center gap-4 px-3 py-1">
+              <button
+                className="ml-auto"
+                onClick={() =>
+                  navigator.clipboard.writeText(JSON.stringify(selectedRow))
+                }
+              >
+                <FiClipboard size={15} />
+              </button>
+              <button className="" onClick={() => setSelectedRow(null)}>
+                <FiX size={17} />
+              </button>
+            </div>
+
             <ReactJsonView
               src={selectedRow}
               enableClipboard={false}
-              style={{ fontFamily: 'Geist', padding: '10px 15px 50px 15px' }}
+              style={{
+                fontFamily: 'Geist',
+                padding: '15px',
+                overflowY: 'auto',
+                height: '95%',
+              }}
               displayObjectSize={false}
               displayDataTypes={false}
               displayArrayKey={false}
               iconStyle="circle"
             />
-            <button
-              className="absolute top-2 right-12"
-              onClick={() =>
-                navigator.clipboard.writeText(JSON.stringify(selectedRow))
-              }
-            >
-              <FiClipboard size={15} />
-            </button>
-            <button
-              className="absolute top-2 right-3"
-              onClick={() => setSelectedRow(null)}
-            >
-              <FiX size={17} />
-            </button>
           </div>
         )}
 
@@ -290,7 +295,7 @@ export default function SuperSqlClient() {
                   {rows.map((row, rowIndex: number) => (
                     <tr
                       key={rowIndex}
-                      className={`even:bg-gray-100 hover:bg-gray-300 hover:cursor-pointer ${selectedRow?.index === rowIndex.toString() && 'outline-1 outline-dashed outline-green-500'}`}
+                      className={`even:bg-gray-100 hover:bg-gray-200 hover:cursor-pointer ${selectedRow?.index === rowIndex.toString() && 'outline-1 outline-dotted outline-green-500'}`}
                       onClick={() =>
                         setSelectedRow({ ...row, index: rowIndex.toString() })
                       }
@@ -314,7 +319,11 @@ export default function SuperSqlClient() {
               )}
             </div>
 
-            <div className="absolute bottom-0 right-0 pl-5 h-8 border-t w-[75%] flex items-center gap-5 bg-white border-l">
+            <div className="absolute bottom-0 right-0 pl-5 h-8 border-t w-[80%] flex items-center gap-5 bg-white border-l">
+              <span className="flex items-center gap-1">
+                <FiTable size={15} />
+                {selectedTable}
+              </span>
               <span>
                 <b>{rows.length}</b> rows
               </span>
