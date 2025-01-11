@@ -238,7 +238,7 @@ export default function SuperSqlClient() {
         )}
 
         {selectedRow && (
-          <div className="fixed right-0 top-0 z-50 bg-white w-[25%] h-screen py-5 border-l break-all overflow-y-auto">
+          <div className="fixed right-0 top-0 z-50 bg-white w-[25%] h-screen py-5 border-l break-all overflow-y-auto shadow-lg">
             <ReactJsonView
               src={selectedRow}
               enableClipboard={false}
