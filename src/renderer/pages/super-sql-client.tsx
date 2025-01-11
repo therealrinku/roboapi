@@ -296,9 +296,16 @@ export default function SuperSqlClient() {
                     <tr
                       key={rowIndex}
                       className={`even:bg-gray-100 hover:bg-gray-200 hover:cursor-pointer ${selectedRow?.index === rowIndex.toString() && 'outline-1 outline-dotted outline-green-500'}`}
-                      onClick={() =>
-                        setSelectedRow({ ...row, index: rowIndex.toString() })
-                      }
+                      onClick={() => {
+                        if (selectedRow?.index === rowIndex.toString()) {
+                          setSelectedRow(null);
+                        } else {
+                          setSelectedRow({
+                            ...row,
+                            index: rowIndex.toString(),
+                          });
+                        }
+                      }}
                     >
                       {Object.values(row).map((col, colIndex) => (
                         <td
