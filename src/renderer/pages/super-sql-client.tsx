@@ -7,6 +7,7 @@ import {
   FiPower,
   FiRotateCw,
   FiTable,
+  FiX,
 } from 'react-icons/fi';
 import Loading from '../components/common/loading';
 import {
@@ -22,6 +23,7 @@ import { sql } from '@codemirror/lang-sql';
 import { autocompletion } from '@codemirror/autocomplete';
 import useSuperApp from '../hooks/use-super-app';
 import { pgDataTypes } from '../utils/pg';
+import ReactJsonView from '@microlink/react-json-view';
 
 export default function SuperSqlClient() {
   const { quitApp } = useSuperApp();
@@ -36,7 +38,7 @@ export default function SuperSqlClient() {
   >(null);
   const [dbTables, setDbTables] = useState<ISuperSqlDbTables>([]);
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
-  const [onHoverTableValue, setOnHoverTableValue] = useState<string | null>(
+  const [selectedRow, setSelectedRow] = useState<Record<string, string> | null>(
     null,
   );
 
@@ -88,7 +90,7 @@ export default function SuperSqlClient() {
           response.response,
         ) as ISuperSqlDbQueryResponse;
         setDbResponse(dbResp);
-        setOnHoverTableValue(null);
+        setSelectedRow(null);
       }
       setLoading(false);
     });
@@ -235,6 +237,34 @@ export default function SuperSqlClient() {
           </div>
         )}
 
+        {selectedRow && (
+          <div className="fixed right-0 top-0 z-50 bg-white w-[25%] h-screen py-5 border-l break-all overflow-y-auto">
+            <ReactJsonView
+              src={selectedRow}
+              enableClipboard={false}
+              style={{ fontFamily: 'Geist', padding: '10px 15px 50px 15px' }}
+              displayObjectSize={false}
+              displayDataTypes={false}
+              displayArrayKey={false}
+              iconStyle="circle"
+            />
+            <button
+              className="absolute top-2 right-12"
+              onClick={() =>
+                navigator.clipboard.writeText(JSON.stringify(selectedRow))
+              }
+            >
+              <FiClipboard size={15} />
+            </button>
+            <button
+              className="absolute top-2 right-3"
+              onClick={() => setSelectedRow(null)}
+            >
+              <FiX size={17} />
+            </button>
+          </div>
+        )}
+
         {!loading && dbResponse && (
           <div>
             <div className="h-[100vh] overflow-auto pb-8">
@@ -258,12 +288,17 @@ export default function SuperSqlClient() {
                 </thead>
                 <tbody>
                   {rows.map((row, rowIndex: number) => (
-                    <tr key={rowIndex} className="even:bg-gray-100">
+                    <tr
+                      key={rowIndex}
+                      className={`even:bg-gray-100 hover:bg-gray-300 hover:cursor-pointer ${selectedRow?.index === rowIndex.toString() && 'outline-1 outline-dashed outline-green-500'}`}
+                      onClick={() =>
+                        setSelectedRow({ ...row, index: rowIndex.toString() })
+                      }
+                    >
                       {Object.values(row).map((col, colIndex) => (
                         <td
                           key={colIndex}
                           title={col}
-                          onClick={() => setOnHoverTableValue(col)}
                           className="py-2 px-4 w-48 max-w-48 overflow-hidden truncate"
                         >
                           {col}
@@ -273,6 +308,7 @@ export default function SuperSqlClient() {
                   ))}
                 </tbody>
               </table>
+
               {rows.length === 0 && (
                 <p className="p-5 text-center">no rows found</p>
               )}
@@ -282,19 +318,6 @@ export default function SuperSqlClient() {
               <span>
                 <b>{rows.length}</b> rows
               </span>
-              {onHoverTableValue && (
-                <div className="flex items-center gap-3 pr-5 w-[85%]">
-                  <span className="truncate">{onHoverTableValue}</span>
-                  <button
-                    className="absolute right-5"
-                    onClick={() =>
-                      navigator.clipboard.writeText(onHoverTableValue)
-                    }
-                  >
-                    <FiClipboard size={14} />
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         )}
