@@ -116,10 +116,6 @@ export default function SuperApiClient() {
     });
   }
 
-  function handleAddHeader() {
-    setHeaders((prev) => [...prev, { key: '', value: '', isActive: true }]);
-  }
-
   function handleChangeHeader(
     type: 'key' | 'value',
     index: number,
@@ -147,10 +143,6 @@ export default function SuperApiClient() {
     setHeaders((prev) => prev.filter((_, i) => i !== index));
   }
 
-  function handleAddParams() {
-    setParams((prev) => [...prev, { key: '', value: '', isActive: true }]);
-  }
-
   function handleChangeParams(
     type: 'key' | 'value',
     index: number,
@@ -168,7 +160,7 @@ export default function SuperApiClient() {
   }
 
   function handleDeleteParams(index: number) {
-    if (index === 0 && headers.length === 1) {
+    if (index === 0 && params.length === 1) {
       const copiedParams = [...params];
       copiedParams[index].key = '';
       copiedParams[index].value = '';
@@ -259,6 +251,21 @@ export default function SuperApiClient() {
     body,
     passApiKeyBy,
   ]);
+
+  const lastHeader = headers[headers.length - 1];
+  const lastParam = params[params.length - 1];
+
+  useEffect(() => {
+    if (lastHeader.key.trim() && lastHeader.value.trim()) {
+      setHeaders((prev) => [...prev, { key: '', value: '', isActive: true }]);
+    }
+  }, [lastHeader.key, lastHeader.value]);
+
+  useEffect(() => {
+    if (lastParam.key.trim() && lastParam.value.trim()) {
+      setParams((prev) => [...prev, { key: '', value: '', isActive: true }]);
+    }
+  }, [lastParam.key, lastParam.value]);
 
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
@@ -379,12 +386,6 @@ export default function SuperApiClient() {
         <div className="mt-2 border-t max-h-[80vh] overflow-y-auto pb-5">
           {activeTab === 'Headers' && (
             <div>
-              <button
-                onClick={handleAddHeader}
-                className="mt-2 flex items-center gap-2"
-              >
-                Add New
-              </button>
               {headers.map((header, i) => {
                 return (
                   <div
@@ -416,8 +417,15 @@ export default function SuperApiClient() {
                         <GoCheckCircle size={16} />
                       )}
                     </button>
-                    <button onClick={() => handleDeleteHeader(i)}>
-                      <FiTrash2 size={16} color="red" />
+                    <button
+                      onClick={() => handleDeleteHeader(i)}
+                      disabled={i === headers.length - 1}
+                      className="disabled:pointer-events-none disabled:opacity-50"
+                    >
+                      <FiTrash2
+                        size={16}
+                        color={i === headers.length - 1 ? 'gray' : 'red'}
+                      />
                     </button>
                   </div>
                 );
@@ -426,12 +434,6 @@ export default function SuperApiClient() {
           )}
           {activeTab === 'Params' && (
             <div>
-              <button
-                onClick={handleAddParams}
-                className="mt-2 flex items-center gap-2"
-              >
-                Add New
-              </button>
               {params.map((param, i) => {
                 return (
                   <div
@@ -463,8 +465,15 @@ export default function SuperApiClient() {
                         <GoCheckCircle size={16} />
                       )}
                     </button>
-                    <button onClick={() => handleDeleteParams(i)}>
-                      <FiTrash2 size={16} color="red" />
+                    <button
+                      disabled={i === params.length - 1}
+                      className="disabled:pointer-events-none disabled:opacity-50"
+                      onClick={() => handleDeleteParams(i)}
+                    >
+                      <FiTrash2
+                        size={16}
+                        color={i === params.length - 1 ? 'gray' : 'red'}
+                      />
                     </button>
                   </div>
                 );
@@ -651,7 +660,10 @@ export default function SuperApiClient() {
                       //@ts-expect-error
                       src={response.responseData as string}
                       enableClipboard={false}
-                      style={{ fontFamily: 'Geist', padding: "10px 15px 50px 15px" }}
+                      style={{
+                        fontFamily: 'Geist',
+                        padding: '10px 15px 50px 15px',
+                      }}
                       displayObjectSize={false}
                       displayDataTypes={false}
                       displayArrayKey={false}
