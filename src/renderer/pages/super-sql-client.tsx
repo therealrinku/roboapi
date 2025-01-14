@@ -291,7 +291,7 @@ export default function SuperSqlClient() {
                   {rows.map((row, rowIndex: number) => (
                     <tr
                       key={rowIndex}
-                      className={`even:bg-gray-100 hover:bg-gray-200 hover:cursor-pointer ${selectedRow?.index === rowIndex.toString() && 'outline-1 outline-dotted outline-green-500'}`}
+                      className={`hover:cursor-pointer ${selectedRow?.index === rowIndex.toString() ? 'bg-red-100' : 'even:bg-gray-100'}`}
                       onClick={() => {
                         if (selectedRow?.index === rowIndex.toString()) {
                           setSelectedRow(null);
