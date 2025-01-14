@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  FiArrowLeft,
   FiClipboard,
   FiDatabase,
   FiPlay,
@@ -118,13 +117,9 @@ export default function SuperSqlClient() {
       <div className="w-[20%] gap-3 mt-5">
         {!connectedDb && (
           <div className="px-5">
-            <div className="absolute bottom-0 left-0 h-8 border-t w-[25%] flex items-center">
-              <button
-                className="flex items-center gap-2 font-bold h-full bg-gray-200 px-5"
-                onClick={quitApp}
-              >
-                <FiArrowLeft size={15} />
-                Back
+            <div className="absolute bottom-0 left-0 h-8 border-t w-[20%] flex items-center">
+              <button className="h-full px-5 font-bold" onClick={quitApp}>
+                Exit
               </button>
             </div>
             <ConnectionForm
@@ -138,17 +133,18 @@ export default function SuperSqlClient() {
 
         {connectedDb && (
           <div className="absolute bottom-0 left-0 h-8 border-t w-[20%] flex items-center">
-            <button
-              className="flex items-center font-bold px-5 bg-red-500 h-full"
-              onClick={disconnect}
-            >
-              <FiPower size={15} color="white" />
-            </button>
-
-            <div className="flex items-center gap-2 bg-gray-100 h-full px-5">
+            {/*<div className="flex items-center gap-2 bg-gray-100 h-full px-5">
               <FiDatabase size={15} />
               {connectedDb}
-            </div>
+            </div>*/}
+
+            <button
+              className="flex items-center justify-center font-bold w-[50%] h-full gap-2"
+              onClick={disconnect}
+            >
+              <FiPower size={14} />
+              <span>Disconnect</span>
+            </button>
 
             {connectedDb && activeTab === 'Query' && (
               <div className="flex items-center gap-5 ml-auto pr-5">
