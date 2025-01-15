@@ -624,26 +624,20 @@ export default function SuperApiClient() {
                   onClick={() => setActiveResponseTab('Headers')}
                 >
                   Headers
-                  {responseHeadersCount > 0 && (
-                    <span className="rounded px-[5px] ml-1 border">
-                      {responseHeadersCount}
-                    </span>
-                  )}
+                  <span className="rounded px-[5px] ml-1 border">
+                    {responseHeadersCount}
+                  </span>
                 </button>
               )}
-              {Object.keys(response.responseCookies).length > 0 && (
-                <button
-                  className={`mt-2 flex items-center ${activeResponseTab === 'Cookies' ? 'font-bold' : ''}`}
-                  onClick={() => setActiveResponseTab('Cookies')}
-                >
-                  Cookies
-                  {responseCookieCount > 0 && (
-                    <span className="rounded px-[5px] ml-1 border">
-                      {responseCookieCount}
-                    </span>
-                  )}
-                </button>
-              )}
+              <button
+                className={`mt-2 flex items-center ${activeResponseTab === 'Cookies' ? 'font-bold' : ''}`}
+                onClick={() => setActiveResponseTab('Cookies')}
+              >
+                Cookies
+                <span className="rounded px-[5px] ml-1 border">
+                  {responseCookieCount}
+                </span>
+              </button>
             </div>
             {activeResponseTab === 'Response' && (
               <div>
