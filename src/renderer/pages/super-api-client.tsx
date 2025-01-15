@@ -39,6 +39,7 @@ export default function SuperApiClient() {
   ////
 
   const [activeTab, setActiveTab] = useState<ISuperApiTabs>('Headers');
+  const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState<boolean>(false);
   const [authorizationType, setAuthorizationType] =
     useState<ISuperApiAuthorizationTypes>('bearer');
@@ -208,6 +209,7 @@ export default function SuperApiClient() {
       setIsApiKeyActive(parsed.isApiKeyActive);
       setBody(parsed.body);
       setPassApiKeyBy(parsed.passApiKeyBy);
+      setNotes(parsed.notes);
     }
   }, []);
 
@@ -227,6 +229,7 @@ export default function SuperApiClient() {
         isApiKeyActive,
         body,
         passApiKeyBy,
+        notes,
       };
 
       localStorage.setItem(
@@ -249,6 +252,7 @@ export default function SuperApiClient() {
     isApiKeyActive,
     body,
     passApiKeyBy,
+    notes,
   ]);
 
   const lastHeader = headers[headers.length - 1];
@@ -375,6 +379,12 @@ export default function SuperApiClient() {
             className={`${activeTab === 'Body' ? 'font-bold' : ''}`}
           >
             Body
+          </button>
+          <button
+            onClick={() => setActiveTab('Notes')}
+            className={`${activeTab === 'Notes' ? 'font-bold' : ''}`}
+          >
+            Notes
           </button>
         </div>
 
@@ -576,9 +586,16 @@ export default function SuperApiClient() {
                 value={body}
                 onChange={(e) => setBody(e)}
                 className="w-full mt-2 border"
-                height="70vh"
+                height="72vh"
               />
             </div>
+          )}
+          {activeTab == 'Notes' && (
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full border h-[75vh] p-3 outline-none mt-2 rounded"
+            />
           )}
         </div>
       </div>

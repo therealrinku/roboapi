@@ -8,7 +8,7 @@ export type ISuperApiRequestTypes =
   | 'HEAD'
   | 'OPTIONS';
 
-export type ISuperApiTabs = 'Headers' | 'Params' | 'Body' | 'Authorization';
+export type ISuperApiTabs = 'Headers' | 'Params' | 'Body' | 'Authorization' | "Notes";
 
 export type ISuperApiResponse = {
   requestUrl: null | string;
