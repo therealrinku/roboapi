@@ -594,7 +594,7 @@ export default function SuperApiClient() {
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full border h-[75vh] p-3 outline-none mt-2 rounded"
+              className="w-full border h-[75vh] p-3 outline-none mt-2 rounded bg-gray-100"
             />
           )}
         </div>
