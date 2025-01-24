@@ -1,33 +1,7 @@
-import {
-  Dispatch,
-  PropsWithChildren,
-  SetStateAction,
-  createContext,
-  useState,
-} from 'react';
-import { IApp } from '../global';
+import { PropsWithChildren, createContext } from 'react';
 
-interface RootContextProps {
-  app: IApp;
-  setApp: Dispatch<SetStateAction<IApp>>;
-}
-
-export const RootContext = createContext<RootContextProps>({
-  app: null,
-  setApp: () => {},
-});
+export const RootContext = createContext({});
 
 export function RootContextProvider({ children }: PropsWithChildren) {
-  const [app, setApp] = useState<IApp>(null);
-
-  return (
-    <RootContext.Provider
-      value={{
-        app,
-        setApp,
-      }}
-    >
-      {children}
-    </RootContext.Provider>
-  );
+  return <RootContext.Provider value={{}}>{children}</RootContext.Provider>;
 }

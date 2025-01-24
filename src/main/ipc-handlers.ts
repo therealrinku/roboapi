@@ -1,8 +1,6 @@
 import { ipcMain } from 'electron';
-import { readFileSync } from 'fs';
-import pg from 'pg';
 
-export function registerSuperApiClientIpcHandlers(
+export function registerApiClientIpcHandlers(
   _mainWindow: Electron.BrowserWindow | null,
 ) {
   ipcMain.on('send-api-request', async (event, args) => {
@@ -69,65 +67,6 @@ export function registerSuperApiClientIpcHandlers(
       };
 
       event.reply('send-api-request', eventReplyObj);
-    }
-  });
-}
-
-export function registerSuperSqlClientIpcHandlers(
-  _mainWindow: Electron.BrowserWindow | null,
-) {
-  let pgPool: pg.Pool;
-  ipcMain.on('connect-to-db', async (event, args) => {
-    try {
-      const connectionObj: pg.PoolConfig = {
-        connectionString: args.connectionUri,
-      };
-      if (args.caFilePath) {
-        connectionObj.ssl = {
-          rejectUnauthorized: true,
-          ca: readFileSync(args.caFilePath, 'utf8'),
-        };
-      }
-      pgPool = new pg.Pool(connectionObj);
-      await pgPool.query('SELECT NOW()');
-      event.reply('connect-to-db', { success: true });
-    } catch (err: any) {
-      event.reply('connect-to-db', { error: true, message: err.message });
-    }
-  });
-
-  ipcMain.on('disconnect-from-db', async (event, args) => {
-    try {
-      await pgPool.end();
-      event.reply('disconnect-from-db', { success: true });
-    } catch (err: any) {
-      event.reply('disconnect-from-db', { error: true, message: err.message });
-    }
-  });
-
-  ipcMain.on('send-db-query', async (event, args) => {
-    try {
-      const resp = await pgPool.query(`${args.query}`);
-      event.reply('send-db-query', {
-        success: true,
-        response: JSON.stringify(resp),
-      });
-    } catch (err: any) {
-      event.reply('send-db-query', { error: true, message: err.message });
-    }
-  });
-
-  ipcMain.on('get-db-tables', async (event) => {
-    try {
-      const resp = await pgPool.query(
-        `SELECT table_name FROM information_schema.tables WHERE table_schema='public'`,
-      );
-      event.reply('get-db-tables', {
-        success: true,
-        response: JSON.stringify(resp),
-      });
-    } catch (err: any) {
-      event.reply('get-db-tables', { error: true, message: err.message });
     }
   });
 }

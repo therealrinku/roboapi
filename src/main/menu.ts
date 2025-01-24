@@ -157,7 +157,7 @@ export default class MenuBuilder {
         {
           label: 'View Source Code',
           click() {
-            shell.openExternal('https://github.com/therealrinku/superapp');
+            shell.openExternal('https://github.com/therealrinku/roboapi');
           },
         },
       ],
@@ -253,9 +253,9 @@ export default class MenuBuilder {
           {
             label: 'View Source Code',
             click() {
-              shell.openExternal('https://github.com/therealrinku/superapp');
+              shell.openExternal('https://github.com/therealrinku/superapi');
             },
-          }
+          },
         ],
       },
     ];

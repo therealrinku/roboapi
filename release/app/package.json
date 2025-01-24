@@ -1,7 +1,7 @@
 {
-  "name": "superapp",
+  "name": "roboapi",
   "version": "0.0.1",
-  "description": "minimal api+sql client",
+  "description": "minimal api client",
   "license": "MIT",
   "author": {
     "name": "Rinku Chaudhari",

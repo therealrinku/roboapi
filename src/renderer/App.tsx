@@ -1,10 +1,7 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { RootContextProvider } from './context/root-context';
 import { useEffect } from 'react';
-import Landing from './pages/landing';
-import useSuperApp from './hooks/use-super-app';
-import SuperApiClient from './pages/super-api-client';
-import SuperSqlClient from './pages/super-sql-client';
+import ApiClient from './pages/api-client';
 import './app.css';
 
 export default function App() {
@@ -20,8 +17,6 @@ export default function App() {
 }
 
 function SetupApp() {
-  const { app } = useSuperApp();
-
   useEffect(() => {
     // load-theme
     if (localStorage.getItem('color-theme') === 'dark') {
@@ -44,12 +39,5 @@ function SetupApp() {
     }
   }
 
-  if (app === 'super_api_client') {
-    return <SuperApiClient />;
-  }
-  if (app == 'super_sql_client') {
-    return <SuperSqlClient />;
-  }
-
-  return <Landing />;
+  return <ApiClient />;
 }

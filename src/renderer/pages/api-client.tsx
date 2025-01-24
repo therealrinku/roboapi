@@ -7,23 +7,20 @@ import {
 } from 'react-icons/fi';
 import { GoCheckCircle, GoCheckCircleFill } from 'react-icons/go';
 import Loading from '../components/common/loading';
-import useSuperApp from '../hooks/use-super-app';
 import {
-  ISuperApiAuthorizationTypes,
-  ISuperApiRequestTypes,
-  ISuperApiResponse,
-  ISuperApiTabs,
+  IAuthorizationTypes,
+  IRequestTypes,
+  IResponse,
+  ITabs,
 } from '../global';
 import ReactJsonView from '@microlink/react-json-view';
 import ReactCodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 
 export default function SuperApiClient() {
-  const { quitApp } = useSuperApp();
-
   const [reqUrl, setReqUrl] = useState('');
-  const [reqType, setReqType] = useState<ISuperApiRequestTypes>('GET');
-  const [response, setResponse] = useState<ISuperApiResponse>({
+  const [reqType, setReqType] = useState<IRequestTypes>('GET');
+  const [response, setResponse] = useState<IResponse>({
     requestUrl: null,
     responseCode: null,
     responseStatusText: null,
@@ -38,11 +35,11 @@ export default function SuperApiClient() {
   );
   ////
 
-  const [activeTab, setActiveTab] = useState<ISuperApiTabs>('Headers');
+  const [activeTab, setActiveTab] = useState<ITabs>('Headers');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState<boolean>(false);
   const [authorizationType, setAuthorizationType] =
-    useState<ISuperApiAuthorizationTypes>('bearer');
+    useState<IAuthorizationTypes>('bearer');
   const [bearerToken, setBearerToken] = useState<string | null>('');
   const [isBearerTokenActive, setIsBearerTokenActive] = useState(true);
   const [apiKeyKey, setApiKeyKey] = useState<string>('');
@@ -111,7 +108,7 @@ export default function SuperApiClient() {
     });
 
     window.electron.ipcRenderer.once('send-api-request', (arg) => {
-      setResponse(arg as ISuperApiResponse);
+      setResponse(arg as IResponse);
       setLoading(false);
     });
   }
@@ -274,15 +271,8 @@ export default function SuperApiClient() {
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
       <div className="w-[50%] px-5 gap-3 mt-5">
         <div className="absolute bottom-0 left-0 h-8 border-t w-[50%] flex items-center">
-          <button className="font-bold h-full px-5" onClick={quitApp}>
-            Exit
-          </button>
-
           {rootFolder ? (
-            <button
-              className="flex items-center gap-2 font-bold bg-gray-200 h-full px-4"
-              onClick={quitApp}
-            >
+            <button className="flex items-center gap-2 font-bold bg-gray-200 h-full px-4">
               <FiFolder size={15} />
               {rootFolder}
             </button>
@@ -317,9 +307,7 @@ export default function SuperApiClient() {
             <select
               className="h-full p-2 pr-7 outline-none pl-4"
               value={reqType}
-              onChange={(e) =>
-                setReqType(e.target.value as ISuperApiRequestTypes)
-              }
+              onChange={(e) => setReqType(e.target.value as IRequestTypes)}
             >
               <option value="GET">GET</option>
               <option value="POST">POST</option>
