@@ -7,19 +7,32 @@ import {
 } from 'react-icons/fi';
 import { GoCheckCircle, GoCheckCircleFill } from 'react-icons/go';
 import Loading from '../components/common/loading';
-import {
-  IAuthorizationTypes,
-  IRequestTypes,
-  IResponse,
-  ITabs,
-} from '../global';
+import { IRequest, IResponse } from '../global';
 import ReactJsonView from '@microlink/react-json-view';
 import ReactCodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 
 export default function SuperApiClient() {
-  const [reqUrl, setReqUrl] = useState('');
-  const [reqType, setReqType] = useState<IRequestTypes>('GET');
+  const [request, setRequest] = useState<IRequest>({
+    rootFolder: localStorage.getItem('api_client_root_folder'),
+    reqUrl: '',
+    reqType: 'get',
+    headers: [{ key: '', value: '', isActive: false }],
+    params: [{ key: '', value: '', isActive: false }],
+    body: '',
+    bearerToken: '',
+    apiKeyKey: '',
+    apiKeyValue: '',
+    isApiKeyActive: false,
+    isBearerTokenActive: false,
+    notes: '',
+    passApiKeyBy: 'headers',
+    authorizationType: 'bearer',
+    activeRequestTab: 'headers',
+    activeResponseTab: 'response',
+    loading: false,
+  });
+
   const [response, setResponse] = useState<IResponse>({
     requestUrl: null,
     responseCode: null,
@@ -29,40 +42,22 @@ export default function SuperApiClient() {
     responseCookies: {},
   });
 
-  /////////
-  const [rootFolder, setRootFolder] = useState(
-    localStorage.getItem('api_client_root_folder'),
-  );
-  ////
-
-  const [activeTab, setActiveTab] = useState<ITabs>('Headers');
-  const [notes, setNotes] = useState('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [authorizationType, setAuthorizationType] =
-    useState<IAuthorizationTypes>('bearer');
-  const [bearerToken, setBearerToken] = useState<string | null>('');
-  const [isBearerTokenActive, setIsBearerTokenActive] = useState(true);
-  const [apiKeyKey, setApiKeyKey] = useState<string>('');
-  const [apiKeyValue, setApiKeyValue] = useState<string>('');
-  const [isApiKeyActive, setIsApiKeyActive] = useState(true);
-  const [passApiKeyBy, setPassApiKeyBy] = useState<'headers' | 'params'>(
-    'headers',
-  );
-
-  const [activeResponseTab, setActiveResponseTab] = useState<
-    'Response' | 'Headers' | 'Cookies'
-  >('Response');
-
-  const [headers, setHeaders] = useState([
-    { key: '', value: '', isActive: true },
-  ]);
-  const [params, setParams] = useState([
-    { key: '', value: '', isActive: true },
-  ]);
-  const [body, setBody] = useState<any>('');
-
   async function sendReq() {
-    setLoading(true);
+    setRequest({ ...request, loading: true });
+
+    const {
+      headers,
+      params,
+      apiKeyKey,
+      apiKeyValue,
+      isApiKeyActive,
+      passApiKeyBy,
+      bearerToken,
+      isBearerTokenActive,
+      reqType,
+      reqUrl,
+      body,
+    } = request;
 
     const activeHeaders = headers.filter(
       (header) => header.key.trim() && header.isActive,
@@ -73,6 +68,7 @@ export default function SuperApiClient() {
 
     const isApiKeyPresentAndActive =
       isApiKeyActive && apiKeyKey.trim() && apiKeyValue.trim();
+
     if (isApiKeyPresentAndActive) {
       if (passApiKeyBy === 'headers') {
         activeHeaders.push({
@@ -91,6 +87,7 @@ export default function SuperApiClient() {
 
     const isBearerTokenActiveAndPresent =
       isBearerTokenActive && bearerToken && bearerToken.trim();
+
     if (isBearerTokenActiveAndPresent) {
       activeHeaders.push({
         key: 'Authorization',
@@ -109,7 +106,7 @@ export default function SuperApiClient() {
 
     window.electron.ipcRenderer.once('send-api-request', (arg) => {
       setResponse(arg as IResponse);
-      setLoading(false);
+      setRequest({ ...request, loading: false });
     });
   }
 
@@ -118,26 +115,31 @@ export default function SuperApiClient() {
     index: number,
     value: string,
   ) {
-    const copiedHeaders = [...headers];
+    const copiedHeaders = [...request.headers];
     copiedHeaders[index][type] = value;
-    setHeaders(copiedHeaders);
+    setRequest({ ...request, headers: copiedHeaders });
   }
 
   function handleHeaderActiveToggle(index: number) {
-    const copiedHeaders = [...headers];
+    const copiedHeaders = [...request.headers];
     copiedHeaders[index].isActive = !copiedHeaders[index].isActive;
-    setHeaders(copiedHeaders);
+    setRequest({ ...request, headers: copiedHeaders });
   }
 
   function handleDeleteHeader(index: number) {
-    if (index === 0 && headers.length === 1) {
-      const copiedHeaders = [...headers];
+    if (index === 0 && request.headers.length === 1) {
+      const copiedHeaders = [...request.headers];
       copiedHeaders[index].key = '';
       copiedHeaders[index].value = '';
-      setHeaders(copiedHeaders);
+      setRequest({ ...request, headers: copiedHeaders });
       return;
     }
-    setHeaders((prev) => prev.filter((_, i) => i !== index));
+    setRequest((prev) => {
+      return {
+        ...prev,
+        headers: prev.headers.filter((_, i) => i !== index),
+      };
+    });
   }
 
   function handleChangeParams(
@@ -145,37 +147,46 @@ export default function SuperApiClient() {
     index: number,
     value: string,
   ) {
-    const copiedParams = [...params];
+    const copiedParams = [...request.params];
     copiedParams[index][type] = value;
-    setParams(copiedParams);
+    setRequest({ ...request, params: copiedParams });
   }
 
   function handleParamsActiveToggle(index: number) {
-    const copiedParams = [...params];
+    const copiedParams = [...request.params];
     copiedParams[index].isActive = !copiedParams[index].isActive;
-    setParams(copiedParams);
+    setRequest({ ...request, params: copiedParams });
   }
 
   function handleDeleteParams(index: number) {
-    if (index === 0 && params.length === 1) {
-      const copiedParams = [...params];
+    if (index === 0 && request.params.length === 1) {
+      const copiedParams = [...request.params];
       copiedParams[index].key = '';
       copiedParams[index].value = '';
-      setParams(copiedParams);
+      setRequest({ ...request, params: copiedParams });
       return;
     }
-    setParams((prev) => prev.filter((_, i) => i !== index));
+    setRequest((prev) => {
+      return {
+        ...prev,
+        params: prev.params.filter((_, i) => i !== index),
+      };
+    });
   }
 
-  const headersCount = headers.filter(
+  const headersCount = request.headers.filter(
     (header) => header.key.trim() && header.isActive,
   ).length;
-  const paramsCount = params.filter(
+  const paramsCount = request.params.filter(
     (param) => param.key.trim() && param.isActive,
   ).length;
   const authorizationExists =
-    (isBearerTokenActive && bearerToken && bearerToken.trim().length > 0) ||
-    (isApiKeyActive && apiKeyKey.trim() && apiKeyValue.trim());
+    (request.isBearerTokenActive &&
+      request.bearerToken &&
+      request.bearerToken.trim().length > 0) ||
+    (request.isApiKeyActive &&
+      request.apiKeyKey.trim() &&
+      request.apiKeyValue.trim());
 
   const responseHeadersCount = Object.keys(response.responseHeaders).length;
   const responseCookieCount = Object.keys(response.responseCookies).length;
@@ -191,42 +202,20 @@ export default function SuperApiClient() {
     );
     if (apiPlaygroundSavedState) {
       const parsed = JSON.parse(apiPlaygroundSavedState);
-      setActiveResponseTab(parsed.activeResponseTab);
       if (parsed.response) {
         setResponse(parsed.response);
       }
-      setReqUrl(parsed.reqUrl);
-      setReqType(parsed.reqType ?? 'GET');
-      setActiveTab(parsed.activeTab);
-      setBearerToken(parsed.bearerToken);
-      setAuthorizationType(parsed.authorizationType);
-      setParams(parsed.params);
-      setHeaders(parsed.headers);
-      setIsBearerTokenActive(parsed.isBearerTokenActive);
-      setIsApiKeyActive(parsed.isApiKeyActive);
-      setBody(parsed.body);
-      setPassApiKeyBy(parsed.passApiKeyBy);
-      setNotes(parsed.notes);
+      if (parsed.request) {
+        setRequest(parsed.request);
+      }
     }
   }, []);
 
   useEffect(() => {
-    if (!rootFolder) {
+    if (!request.rootFolder) {
       const apiPlaygroundState = {
-        reqUrl,
-        activeResponseTab,
+        request,
         response,
-        reqType,
-        activeTab,
-        bearerToken,
-        authorizationType,
-        params,
-        headers,
-        isBearerTokenActive,
-        isApiKeyActive,
-        body,
-        passApiKeyBy,
-        notes,
       };
 
       localStorage.setItem(
@@ -234,36 +223,30 @@ export default function SuperApiClient() {
         JSON.stringify(apiPlaygroundState),
       );
     }
-  }, [
-    response,
-    reqUrl,
-    reqType,
-    activeTab,
-    bearerToken,
-    authorizationType,
-    activeResponseTab,
-    params,
-    headers,
-    bearerToken,
-    isBearerTokenActive,
-    isApiKeyActive,
-    body,
-    passApiKeyBy,
-    notes,
-  ]);
+  }, [response, request]);
 
-  const lastHeader = headers[headers.length - 1];
-  const lastParam = params[params.length - 1];
+  const lastHeader = request.headers[request.headers.length - 1];
+  const lastParam = request.params[request.params.length - 1];
 
   useEffect(() => {
     if (lastHeader.key.trim() && lastHeader.value.trim()) {
-      setHeaders((prev) => [...prev, { key: '', value: '', isActive: true }]);
+      setRequest((prev) => {
+        return {
+          ...prev,
+          headers: [...prev.headers, { key: '', value: '', isActive: true }],
+        };
+      });
     }
   }, [lastHeader.key, lastHeader.value]);
 
   useEffect(() => {
     if (lastParam.key.trim() && lastParam.value.trim()) {
-      setParams((prev) => [...prev, { key: '', value: '', isActive: true }]);
+      setRequest((prev) => {
+        return {
+          ...prev,
+          params: [...prev.params, { key: '', value: '', isActive: true }],
+        };
+      });
     }
   }, [lastParam.key, lastParam.value]);
 
@@ -271,10 +254,10 @@ export default function SuperApiClient() {
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
       <div className="w-[50%] px-5 gap-3 mt-5">
         <div className="absolute bottom-0 left-0 h-8 border-t w-[50%] flex items-center">
-          {rootFolder ? (
+          {request.rootFolder ? (
             <button className="flex items-center gap-2 font-bold bg-gray-200 h-full px-4">
               <FiFolder size={15} />
-              {rootFolder}
+              {request.rootFolder}
             </button>
           ) : (
             <button className="flex items-center gap-2 font-bold bg-gray-200 h-full px-4 border-l border-gray-100 hidden">
@@ -287,8 +270,8 @@ export default function SuperApiClient() {
         <div>
           <div className="flex items-center gap-2">
             <div className="font-bold flex items-center gap-2">
-              {rootFolder ? (
-                <p>{rootFolder}</p>
+              {request.rootFolder ? (
+                <p>{request.rootFolder}</p>
               ) : (
                 <div className="flex items-center gap-2">
                   <FiAlertTriangle size={15} color="red" />
@@ -306,20 +289,24 @@ export default function SuperApiClient() {
           >
             <select
               className="h-full p-2 pr-7 outline-none pl-4"
-              value={reqType}
-              onChange={(e) => setReqType(e.target.value as IRequestTypes)}
+              value={request.reqType}
+              onChange={(e) =>
+                setRequest({ ...request, reqType: e.target.value })
+              }
             >
-              <option value="GET">GET</option>
-              <option value="POST">POST</option>
-              <option value="PATCH">PATCH</option>
-              <option value="DELETE">DELETE</option>
-              <option value="PUT">PUT</option>
-              <option value="OPTIONS">OPTIONS</option>
-              <option value="HEAD">HEAD</option>
+              <option value="get">GET</option>
+              <option value="post">POST</option>
+              <option value="patch">PATCH</option>
+              <option value="delete">DELETE</option>
+              <option value="put">PUT</option>
+              <option value="options">OPTIONS</option>
+              <option value="head">HEAD</option>
             </select>
             <input
-              value={reqUrl}
-              onChange={(e) => setReqUrl(e.target.value)}
+              value={request.reqUrl}
+              onChange={(e) =>
+                setRequest({ ...request, reqUrl: e.target.value })
+              }
               placeholder="Request Url"
               className="w-full bg-inherit outline-none px-2 border-l border-gray-200 h-full"
             />
@@ -334,8 +321,10 @@ export default function SuperApiClient() {
 
         <div className="flex items-center gap-5 mt-2">
           <button
-            onClick={() => setActiveTab('Headers')}
-            className={`${activeTab === 'Headers' ? 'font-bold' : ''}`}
+            onClick={() =>
+              setRequest({ ...request, activeRequestTab: 'headers' })
+            }
+            className={`${request.activeRequestTab === 'headers' ? 'font-bold' : ''}`}
           >
             Headers
             {headersCount > 0 && (
@@ -345,8 +334,10 @@ export default function SuperApiClient() {
             )}
           </button>
           <button
-            onClick={() => setActiveTab('Params')}
-            className={`${activeTab === 'Params' ? 'font-bold' : ''}`}
+            onClick={() =>
+              setRequest({ ...request, activeRequestTab: 'params' })
+            }
+            className={`${request.activeRequestTab === 'params' ? 'font-bold' : ''}`}
           >
             Params
             {paramsCount > 0 && (
@@ -356,30 +347,34 @@ export default function SuperApiClient() {
             )}
           </button>
           <button
-            onClick={() => setActiveTab('Authorization')}
-            className={`${activeTab === 'Authorization' ? 'font-bold' : ''}`}
+            onClick={() =>
+              setRequest({ ...request, activeRequestTab: 'authorization' })
+            }
+            className={`${request.activeRequestTab === 'authorization' ? 'font-bold' : ''}`}
           >
             Authorization
             {authorizationExists && <span className="ml-1">&middot;</span>}
           </button>
           <button
-            onClick={() => setActiveTab('Body')}
-            className={`${activeTab === 'Body' ? 'font-bold' : ''}`}
+            onClick={() => setRequest({ ...request, activeRequestTab: 'body' })}
+            className={`${request.activeRequestTab === 'body' ? 'font-bold' : ''}`}
           >
             Body
           </button>
           <button
-            onClick={() => setActiveTab('Notes')}
-            className={`${activeTab === 'Notes' ? 'font-bold' : ''}`}
+            onClick={() =>
+              setRequest({ ...request, activeRequestTab: 'notes' })
+            }
+            className={`${request.activeRequestTab === 'notes' ? 'font-bold' : ''}`}
           >
             Notes
           </button>
         </div>
 
         <div className="mt-2 border-t max-h-[80vh] overflow-y-auto pb-5">
-          {activeTab === 'Headers' && (
+          {request.activeRequestTab === 'headers' && (
             <div>
-              {headers.map((header, i) => {
+              {request.headers.map((header, i) => {
                 return (
                   <div
                     key={i}
@@ -412,12 +407,14 @@ export default function SuperApiClient() {
                     </button>
                     <button
                       onClick={() => handleDeleteHeader(i)}
-                      disabled={i === headers.length - 1}
+                      disabled={i === request.headers.length - 1}
                       className="disabled:pointer-events-none disabled:opacity-50"
                     >
                       <FiTrash2
                         size={16}
-                        color={i === headers.length - 1 ? 'gray' : 'red'}
+                        color={
+                          i === request.headers.length - 1 ? 'gray' : 'red'
+                        }
                       />
                     </button>
                   </div>
@@ -425,9 +422,9 @@ export default function SuperApiClient() {
               })}
             </div>
           )}
-          {activeTab === 'Params' && (
+          {request.activeRequestTab === 'params' && (
             <div>
-              {params.map((param, i) => {
+              {request.params.map((param, i) => {
                 return (
                   <div
                     key={i}
@@ -459,13 +456,13 @@ export default function SuperApiClient() {
                       )}
                     </button>
                     <button
-                      disabled={i === params.length - 1}
+                      disabled={i === request.params.length - 1}
                       className="disabled:pointer-events-none disabled:opacity-50"
                       onClick={() => handleDeleteParams(i)}
                     >
                       <FiTrash2
                         size={16}
-                        color={i === params.length - 1 ? 'gray' : 'red'}
+                        color={i === request.params.length - 1 ? 'gray' : 'red'}
                       />
                     </button>
                   </div>
@@ -473,64 +470,88 @@ export default function SuperApiClient() {
               })}
             </div>
           )}
-          {activeTab === 'Authorization' && (
+          {request.activeRequestTab === 'authorization' && (
             <div>
               <div className="flex items-center gap-5">
                 <button
-                  onClick={() => setAuthorizationType('bearer')}
-                  className={`mt-2 flex items-center gap-2 ${authorizationType === 'bearer' ? 'font-bold' : ''}`}
+                  onClick={() =>
+                    setRequest({ ...request, authorizationType: 'bearer' })
+                  }
+                  className={`mt-2 flex items-center gap-2 ${request.authorizationType === 'bearer' ? 'font-bold' : ''}`}
                 >
                   Bearer Token
                 </button>
                 <button
-                  onClick={() => setAuthorizationType('api_key')}
-                  className={`mt-2 flex items-center gap-2 ${authorizationType === 'api_key' ? 'font-bold' : ''}`}
+                  onClick={() =>
+                    setRequest({ ...request, authorizationType: 'api_key' })
+                  }
+                  className={`mt-2 flex items-center gap-2 ${request.authorizationType === 'api_key' ? 'font-bold' : ''}`}
                 >
                   Api Key
                 </button>
               </div>
-              {authorizationType === 'bearer' && (
+              {request.authorizationType === 'bearer' && (
                 <div className="flex items-center justify-between mt-2">
                   <input
-                    value={bearerToken ?? ''}
-                    onChange={(e) => setBearerToken(e.target.value)}
+                    value={request.bearerToken ?? ''}
+                    onChange={(e) =>
+                      setRequest({ ...request, bearerToken: e.target.value })
+                    }
                     type="text"
                     placeholder="Bearer Token"
                     className="w-[86%] border p-2 rounded outline-none bg-gray-100"
                   />
                   <button
-                    onClick={() => setIsBearerTokenActive((prev) => !prev)}
+                    onClick={() =>
+                      setRequest({
+                        ...request,
+                        isBearerTokenActive: !request.isBearerTokenActive,
+                      })
+                    }
                   >
-                    {isBearerTokenActive ? (
+                    {request.isBearerTokenActive ? (
                       <GoCheckCircleFill size={16} />
                     ) : (
                       <GoCheckCircle size={16} />
                     )}
                   </button>
-                  <button onClick={() => setBearerToken(null)}>
+                  <button
+                    onClick={() => setRequest({ ...request, bearerToken: '' })}
+                  >
                     <FiTrash2 size={16} color="red" />
                   </button>
                 </div>
               )}
-              {authorizationType === 'api_key' && (
+              {request.authorizationType === 'api_key' && (
                 <div>
                   <div className="flex items-center justify-between mt-2">
                     <input
-                      value={apiKeyKey ?? ''}
-                      onChange={(e) => setApiKeyKey(e.target.value)}
+                      value={request.apiKeyKey ?? ''}
+                      onChange={(e) =>
+                        setRequest({ ...request, apiKeyKey: e.target.value })
+                      }
                       type="text"
                       placeholder="Key"
                       className="w-[43%] border p-2 rounded outline-none bg-gray-100"
                     />
                     <input
-                      value={apiKeyValue ?? ''}
-                      onChange={(e) => setApiKeyValue(e.target.value)}
+                      value={request.apiKeyValue ?? ''}
+                      onChange={(e) =>
+                        setRequest({ ...request, apiKeyValue: e.target.value })
+                      }
                       type="text"
                       placeholder="Value"
                       className="w-[43%] border p-2 rounded outline-none bg-gray-100"
                     />
-                    <button onClick={() => setIsApiKeyActive((prev) => !prev)}>
-                      {isApiKeyActive ? (
+                    <button
+                      onClick={() =>
+                        setRequest({
+                          ...request,
+                          isApiKeyActive: !request.isApiKeyActive,
+                        })
+                      }
+                    >
+                      {request.isApiKeyActive ? (
                         <GoCheckCircleFill size={16} />
                       ) : (
                         <GoCheckCircle size={16} />
@@ -538,8 +559,11 @@ export default function SuperApiClient() {
                     </button>
                     <button
                       onClick={() => {
-                        setApiKeyKey('');
-                        setApiKeyValue('');
+                        setRequest({
+                          ...request,
+                          apiKeyKey: '',
+                          apiKeyValue: '',
+                        });
                       }}
                     >
                       <FiTrash2 size={16} color="red" />
@@ -549,11 +573,14 @@ export default function SuperApiClient() {
                   <div className="mt-3 flex flex-col gap-2">
                     <span className="font-bold">Pass through</span>
                     <select
-                      disabled={!isApiKeyActive}
+                      disabled={!request.isApiKeyActive}
                       className="bg-gray-100 p-2 outline-none w-full rounded border border-gray-200"
-                      value={passApiKeyBy}
+                      value={request.passApiKeyBy}
                       onChange={(e) =>
-                        setPassApiKeyBy(e.target.value as 'headers' | 'params')
+                        setRequest({
+                          ...request,
+                          passApiKeyBy: e.target.value as 'headers' | 'params',
+                        })
                       }
                     >
                       <option value="headers">Headers</option>
@@ -564,24 +591,26 @@ export default function SuperApiClient() {
               )}
             </div>
           )}
-          {activeTab === 'Body' && (
+          {request.activeRequestTab === 'body' && (
             <div>
               <div>
                 <button className="mt-2 flex items-center gap-2">JSON</button>
               </div>
               <ReactCodeMirror
                 extensions={[json()]}
-                value={body}
-                onChange={(e) => setBody(e)}
+                value={request.body}
+                onChange={(e) => setRequest({ ...request, body: e })}
                 className="w-full mt-2 border"
                 height="72vh"
               />
             </div>
           )}
-          {activeTab == 'Notes' && (
+          {request.activeRequestTab === 'notes' && (
             <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              value={request.notes}
+              onChange={(e) =>
+                setRequest({ ...request, notes: e.target.value })
+              }
               className="w-full border h-[75vh] p-3 outline-none mt-2 rounded bg-gray-100"
             />
           )}
@@ -589,116 +618,131 @@ export default function SuperApiClient() {
       </div>
 
       <div className="w-[50%] border-l min-h-screen">
-        {loading && (
+        {request.loading && (
           <div className="h-screen w-full flex flex-col items-center justify-center">
             <Loading />
           </div>
         )}
-        {(response.responseCode || response.responseStatusText) && !loading && (
-          <div className="bg-gray-100">
-            <div className="flex items-center gap-5 border-b px-5 pb-2">
-              <button
-                className={`mt-2 flex items-center ${activeResponseTab === 'Response' ? 'font-bold' : ''}`}
-                onClick={() => setActiveResponseTab('Response')}
-              >
-                Response
-                <span className="rounded px-[5px] ml-1 border">
-                  {response.responseCode} {response.responseStatusText}
-                </span>
-              </button>
-              {Object.keys(response.responseHeaders).length > 0 && (
+        {(response.responseCode || response.responseStatusText) &&
+          !request.loading && (
+            <div className="bg-gray-100">
+              <div className="flex items-center gap-5 border-b px-5 pb-2">
                 <button
-                  className={`mt-2 flex items-center ${activeResponseTab === 'Headers' ? 'font-bold' : ''}`}
-                  onClick={() => setActiveResponseTab('Headers')}
+                  className={`mt-2 flex items-center ${request.activeResponseTab === 'response' ? 'font-bold' : ''}`}
+                  onClick={() =>
+                    setRequest({ ...request, activeResponseTab: 'response' })
+                  }
                 >
-                  Headers
+                  Response
                   <span className="rounded px-[5px] ml-1 border">
-                    {responseHeadersCount}
+                    {response.responseCode} {response.responseStatusText}
                   </span>
                 </button>
-              )}
-              <button
-                className={`mt-2 flex items-center ${activeResponseTab === 'Cookies' ? 'font-bold' : ''}`}
-                onClick={() => setActiveResponseTab('Cookies')}
-              >
-                Cookies
-                <span className="rounded px-[5px] ml-1 border">
-                  {responseCookieCount}
-                </span>
-              </button>
-            </div>
-            {activeResponseTab === 'Response' && (
-              <div>
-                {response.responseData && !isHTMLResponse && (
+                {Object.keys(response.responseHeaders).length > 0 && (
                   <button
+                    className={`mt-2 flex items-center ${request.activeResponseTab === 'headers' ? 'font-bold' : ''}`}
                     onClick={() =>
-                      navigator.clipboard.writeText(
-                        JSON.stringify(response.responseData),
-                      )
+                      setRequest({ ...request, activeResponseTab: 'headers' })
                     }
-                    className="py-2 px-5 flex items-center gap-2 ml-auto absolute bg-gray-100 right-0 z-50"
                   >
-                    <FiClipboard size={15} />
-                    Copy
+                    Headers
+                    <span className="rounded px-[5px] ml-1 border">
+                      {responseHeadersCount}
+                    </span>
                   </button>
                 )}
-                <div className="h-screen overflow-y-auto w-full break-all">
-                  {isHTMLResponse ? (
-                    <webview
-                      id="w"
-                      src={response.requestUrl as string}
-                      className="w-full h-full"
-                    ></webview>
-                  ) : isJSONResponse ? (
-                    <ReactJsonView
-                      //@ts-expect-error
-                      src={response.responseData as string}
-                      enableClipboard={false}
-                      style={{
-                        fontFamily: 'Geist',
-                        padding: '10px 15px 50px 15px',
-                      }}
-                      displayObjectSize={false}
-                      displayDataTypes={false}
-                      displayArrayKey={false}
-                      iconStyle="circle"
-                    />
-                  ) : null}
+                <button
+                  className={`mt-2 flex items-center ${request.activeResponseTab === 'cookies' ? 'font-bold' : ''}`}
+                  onClick={() =>
+                    setRequest({ ...request, activeResponseTab: 'cookies' })
+                  }
+                >
+                  Cookies
+                  <span className="rounded px-[5px] ml-1 border">
+                    {responseCookieCount}
+                  </span>
+                </button>
+              </div>
+              {request.activeResponseTab === 'response' && (
+                <div>
+                  {response.responseData && !isHTMLResponse && (
+                    <button
+                      onClick={() =>
+                        navigator.clipboard.writeText(
+                          JSON.stringify(response.responseData),
+                        )
+                      }
+                      className="py-2 px-5 flex items-center gap-2 ml-auto absolute bg-gray-100 right-0 z-50"
+                    >
+                      <FiClipboard size={15} />
+                      Copy
+                    </button>
+                  )}
+                  <div className="h-screen overflow-y-auto w-full break-all">
+                    {isHTMLResponse ? (
+                      <webview
+                        id="w"
+                        src={response.requestUrl as string}
+                        className="w-full h-full"
+                      ></webview>
+                    ) : isJSONResponse ? (
+                      <ReactJsonView
+                        //@ts-expect-error
+                        src={response.responseData as string}
+                        enableClipboard={false}
+                        style={{
+                          fontFamily: 'Geist',
+                          padding: '10px 15px 50px 15px',
+                        }}
+                        displayObjectSize={false}
+                        displayDataTypes={false}
+                        displayArrayKey={false}
+                        iconStyle="circle"
+                      />
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            )}
-            {activeResponseTab === 'Headers' && (
-              <div className="overflow-y-auto h-screen">
-                {Object.entries(response.responseHeaders).map((key, value) => {
-                  return (
-                    <div
-                      key={value}
-                      className="flex items-center justify-between border-b py-2 px-5"
-                    >
-                      <p className="font-bold w-[50%] break-all">{key[0]}</p>
-                      <p className="w-[50%] break-all">{key[1]}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            {activeResponseTab === 'Cookies' && (
-              <div className="overflow-y-auto h-screen">
-                {Object.entries(response.responseCookies).map((key, value) => {
-                  return (
-                    <div
-                      key={value}
-                      className="flex items-center justify-between border-b py-2 px-5"
-                    >
-                      <p className="font-bold w-[50%] break-all">{key[0]}</p>
-                      <p className="w-[50%] break-all">{key[1]}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
+              )}
+              {request.activeResponseTab === 'headers' && (
+                <div className="overflow-y-auto h-screen">
+                  {Object.entries(response.responseHeaders).map(
+                    (key, value) => {
+                      return (
+                        <div
+                          key={value}
+                          className="flex items-center justify-between border-b py-2 px-5"
+                        >
+                          <p className="font-bold w-[50%] break-all">
+                            {key[0]}
+                          </p>
+                          <p className="w-[50%] break-all">{key[1]}</p>
+                        </div>
+                      );
+                    },
+                  )}
+                </div>
+              )}
+              {request.activeResponseTab === 'cookies' && (
+                <div className="overflow-y-auto h-screen">
+                  {Object.entries(response.responseCookies).map(
+                    (key, value) => {
+                      return (
+                        <div
+                          key={value}
+                          className="flex items-center justify-between border-b py-2 px-5"
+                        >
+                          <p className="font-bold w-[50%] break-all">
+                            {key[0]}
+                          </p>
+                          <p className="w-[50%] break-all">{key[1]}</p>
+                        </div>
+                      );
+                    },
+                  )}
+                </div>
+              )}
+            </div>
+          )}
       </div>
     </div>
   );
