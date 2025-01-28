@@ -1,8 +1,29 @@
-import { ipcMain } from 'electron';
+import { dialog, ipcMain } from 'electron';
+import { existsSync, readFileSync, readdir, writeFileSync } from 'fs';
 
-export function registerApiClientIpcHandlers(
-  _mainWindow: Electron.BrowserWindow | null,
+export function registerApiClientFileSystemIpcHandlers(
+  mainWindow: Electron.BrowserWindow | null,
 ) {
+  ipcMain.on('open-root-dir-selector', async (event, _) => {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow!, {
+      properties: ['openDirectory'],
+    });
+
+    if (canceled || !filePaths[0]) {
+      return;
+    }
+
+    event.reply('open-root-dir-selector', filePaths[0]);
+  });
+
+  ipcMain.on('check-if-root-dir-exists', async (event, args) => {
+    const exists = existsSync(args);
+
+    event.reply('check-if-root-dir-exists', exists);
+  });
+}
+
+export function registerApiClientIpcHandlers() {
   ipcMain.on('send-api-request', async (event, args) => {
     const headersObj: Record<string, string> = {};
     const paramsObj: Record<string, string> = {};
@@ -56,7 +77,7 @@ export function registerApiClientIpcHandlers(
       };
 
       event.reply('send-api-request', eventReplyObj);
-    } catch (err:any) {
+    } catch (err: any) {
       const eventReplyObj = {
         responseData: null,
         responseHeaders: {},

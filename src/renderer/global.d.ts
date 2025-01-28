@@ -1,5 +1,4 @@
 export type IRequest = {
-  rootFolder: string | null;
   reqUrl: string;
   reqType: 'get' | 'post' | 'put' | 'patch' | 'head' | 'options';
   headers: Array<{ key: string; value: string; isActive: boolean }>;

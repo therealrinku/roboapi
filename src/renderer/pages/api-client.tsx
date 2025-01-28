@@ -11,10 +11,12 @@ import { IRequest, IResponse } from '../global';
 import ReactJsonView from '@microlink/react-json-view';
 import ReactCodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
+import useApiClient from '../hooks/useApiClient';
 
 export default function SuperApiClient() {
+  const { rootDir } = useApiClient();
+
   const [request, setRequest] = useState<IRequest>({
-    rootFolder: localStorage.getItem('api_client_root_folder'),
     reqUrl: '',
     reqType: 'get',
     headers: [{ key: '', value: '', isActive: false }],
@@ -212,7 +214,7 @@ export default function SuperApiClient() {
   }, []);
 
   useEffect(() => {
-    if (!request.rootFolder) {
+    if (!rootDir) {
       const apiPlaygroundState = {
         request,
         response,
@@ -250,28 +252,26 @@ export default function SuperApiClient() {
     }
   }, [lastParam.key, lastParam.value]);
 
+  function handleSelectRootDir() {
+    window.electron.ipcRenderer.sendMessage('open-root-dir-selector');
+  }
+
+  const rootDirFolder = rootDir?.split('/')[rootDir?.split('/').length - 1];
+
   return (
     <div className="flex items-start text-xs max-h-screen overflow-hidden">
       <div className="w-[50%] px-5 gap-3 mt-5">
-        <div className="absolute bottom-0 left-0 h-8 border-t w-[50%] flex items-center">
-          {request.rootFolder ? (
-            <button className="flex items-center gap-2 font-bold bg-gray-200 h-full px-4">
-              <FiFolder size={15} />
-              {request.rootFolder}
-            </button>
-          ) : (
-            <button className="flex items-center gap-2 font-bold bg-gray-200 h-full px-4 border-l border-gray-100 hidden">
-              <FiFolder size={15} />
-              Open Folder
-            </button>
-          )}
-        </div>
-
         <div>
           <div className="flex items-center gap-2">
-            <div className="font-bold flex items-center gap-2">
-              {request.rootFolder ? (
-                <p>{request.rootFolder}</p>
+            <div className="flex items-center gap-2">
+              {rootDir ? (
+                <button
+                  className="flex items-center gap-2"
+                  onClick={handleSelectRootDir}
+                >
+                  <FiFolder size={15} />
+                  <p className="font-bold">{rootDirFolder}</p>
+                </button>
               ) : (
                 <div className="flex items-center gap-2">
                   <FiAlertTriangle size={15} color="red" />
@@ -291,6 +291,7 @@ export default function SuperApiClient() {
               className="h-full p-2 pr-7 outline-none pl-4"
               value={request.reqType}
               onChange={(e) =>
+                //@ts-ignore
                 setRequest({ ...request, reqType: e.target.value })
               }
             >

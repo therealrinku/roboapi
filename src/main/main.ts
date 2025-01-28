@@ -4,7 +4,10 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { registerApiClientIpcHandlers } from './ipc-handlers';
+import {
+  registerApiClientIpcHandlers,
+  registerApiClientFileSystemIpcHandlers,
+} from './ipc-handlers';
 
 class AppUpdater {
   constructor() {
@@ -17,7 +20,8 @@ class AppUpdater {
 let mainWindow: BrowserWindow | null = null;
 
 // all the ipc handlers are here
-registerApiClientIpcHandlers(mainWindow);
+registerApiClientIpcHandlers();
+registerApiClientFileSystemIpcHandlers(mainWindow);
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');

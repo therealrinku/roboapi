@@ -1,13 +1,9 @@
-// Disable no-unused-vars, broken for spread args
-/* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 export type Channels =
   | 'send-api-request'
-  | 'connect-to-db'
-  | 'disconnect-from-db'
-  | 'send-db-query'
-  | 'get-db-tables';
+  | 'open-root-dir-selector'
+  | 'check-if-root-dir-exists';
 
 const electronHandler = {
   ipcRenderer: {
