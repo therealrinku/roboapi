@@ -275,7 +275,8 @@ export default function SuperApiClient() {
               ) : (
                 <div className="flex items-center gap-2">
                   <FiAlertTriangle size={15} color="red" />
-                  <p>Playground</p>
+                  <p className="font-bold">Playground</p>
+                  <button onClick={handleSelectRootDir}>Open Folder</button>
                 </div>
               )}
             </div>
