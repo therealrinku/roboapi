@@ -689,8 +689,7 @@ export default function SuperApiClient() {
                       ></webview>
                     ) : isJSONResponse ? (
                       <ReactJsonView
-                        //@ts-expect-error
-                        src={response.responseData as string}
+                        src={response.responseData as JSON}
                         enableClipboard={false}
                         style={{
                           fontFamily: 'Geist',

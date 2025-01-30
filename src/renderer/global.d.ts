@@ -21,7 +21,7 @@ export type IResponse = {
   requestUrl: null | string;
   responseCode: null | string;
   responseStatusText: string | null;
-  responseData: string | null;
+  responseData: Record<string, any> | null;
   responseHeaders: Record<string, string>;
   responseCookies: Record<string, string>;
 };
